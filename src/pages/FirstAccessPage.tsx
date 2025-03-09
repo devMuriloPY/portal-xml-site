@@ -1,73 +1,70 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FileX as FileXml, UserPlus } from 'lucide-react';
-import { auth } from '../services/api';
-import toast, { Toaster } from 'react-hot-toast';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FileX as FileXml, UserPlus } from "lucide-react";
+import { auth } from "../services/api";
+import toast, { Toaster } from "react-hot-toast";
 
 const FirstAccessPage = () => {
   const navigate = useNavigate();
-  const [cnpj, setCnpj] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [cnpj, setCnpj] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const formatCNPJ = (value: string) => {
     return value
-      .replace(/\D/g, '')
-      .replace(/(\d{2})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1/$2')
-      .replace(/(\d{4})(\d)/, '$1-$2')
+      .replace(/\D/g, "") // Remove tudo que não for número
+      .replace(/(\d{2})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1/$2")
+      .replace(/(\d{4})(\d)/, "$1-$2")
       .slice(0, 18);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (cnpj.replace(/\D/g, '').length !== 14) {
-      toast.error('CNPJ inválido');
+
+    if (cnpj.replace(/\D/g, "").length !== 14) {
+      toast.error("CNPJ inválido");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error('As senhas não coincidem');
+      toast.error("As senhas não coincidem");
       return;
     }
 
     if (password.length < 6) {
-      toast.error('A senha deve ter pelo menos 6 caracteres');
+      toast.error("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
     setIsLoading(true);
 
+    const formattedCnpj = formatCNPJ(cnpj);
+    console.log("Enviando requisição com CNPJ:", formattedCnpj);
+
     try {
-      console.log('Submitting form with CNPJ:', cnpj);
-    
-      const formattedCnpj = cnpj.replace(/\D/g, '')
-        .replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, '$1.$2.$3/$4-$5');
-    
       const response = await auth.primeiroAcesso(
         formattedCnpj,
         password,
         confirmPassword
       );
-    
-      // ✅ Garantir que a resposta tenha status de sucesso antes de continuar
-      if (response && response.message) {
+
+      console.log("Resposta do Axios:", response);
+
+      if (response?.message) {
         toast.success(response.message);
-        navigate('/login');
+        navigate("/login");
       } else {
-        toast.error('Erro inesperado ao cadastrar a senha.');
+        toast.error("Erro inesperado ao cadastrar a senha.");
       }
-    
     } catch (error: any) {
-      // ❗️ Verificar se foi erro de resposta da API ou erro genérico
-      const errorMessage = error.response?.data?.message || error.message || 'Erro ao cadastrar senha';
-      console.error('Primeiro Acesso Error:', error);
-      toast.error(errorMessage);
+      console.error("Erro na requisição:", error.message);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
-    
   };
 
   return (
@@ -87,7 +84,10 @@ const FirstAccessPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="cnpj" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="cnpj"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               CNPJ
             </label>
             <input
@@ -102,7 +102,10 @@ const FirstAccessPage = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Nova Senha
             </label>
             <input
@@ -117,7 +120,10 @@ const FirstAccessPage = () => {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Confirmar Senha
             </label>
             <input
@@ -135,19 +141,16 @@ const FirstAccessPage = () => {
             type="submit"
             disabled={isLoading}
             className={`w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center ${
-              isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              isLoading ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
             <UserPlus className="h-5 w-5 mr-2" />
-            {isLoading ? 'Cadastrando...' : 'Cadastrar Senha'}
+            {isLoading ? "Cadastrando..." : "Cadastrar Senha"}
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <Link
-            to="/login"
-            className="text-indigo-600 hover:text-indigo-700"
-          >
+          <Link to="/login" className="text-indigo-600 hover:text-indigo-700">
             Já possui cadastro? Faça login
           </Link>
         </div>
