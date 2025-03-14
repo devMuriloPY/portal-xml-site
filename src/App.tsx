@@ -3,7 +3,9 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import FirstAccessPage from "./pages/FirstAccessPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import Dashboard from "./pages/Dashboard"; // Importação do Dashboard
+import Dashboard from "./pages/Dashboard";
+import ClientDetails from "./pages/ClientDetails";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -13,8 +15,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/primeiro-acesso" element={<FirstAccessPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
-        <Route path="/dashboard" element={<Dashboard />} /> {/* Nova rota */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/clientes/:id" element={<ClientDetails />} />
       </Routes>
+      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
     </Router>
   );
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://portal-xml-api-new-portal-xml-api.up.railway.app";
+const BASE_URL = "https://api.murilomendonca.com.br";
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -14,14 +14,14 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
-    config.headers.Authorization = token;
+    config.headers.Authorization = `Bearer ${token.replace("Bearer ", "")}`;
   } else {
     console.warn("⚠️ Nenhum token encontrado no localStorage!");
   }
   return config;
 });
 
-// ✅ Interceptor de resposta corrigido para evitar erro com 201 Created
+// ✅ Interceptor de resposta com tratamento para sessão expirada
 api.interceptors.response.use(
   (response) => {
     console.log("✅ Resposta da API:", response);
@@ -29,9 +29,16 @@ api.interceptors.response.use(
   },
   (error) => {
     console.error("❌ Erro na API:", error);
-    
+
     if (!error.response) {
       return Promise.reject(new Error("Erro de conexão com o servidor"));
+    }
+
+    if (error.response.status === 401) {
+      // 🔐 Sessão expirada
+      localStorage.removeItem("token");
+      localStorage.setItem("sessionExpired", "true"); // Flag pra avisar o login
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);
@@ -49,7 +56,7 @@ export const auth = {
         senha,
       });
 
-      localStorage.setItem("token", `Bearer ${response.data.access_token}`); // ✅ Agora salva com "Bearer "
+      localStorage.setItem("token", `Bearer ${response.data.access_token}`);
       return response.data;
     } catch (error: any) {
       console.error("🔥 Login Error:", error.response?.data || error.message);
@@ -81,15 +88,17 @@ export const auth = {
     }
   },
 
-  solicitarRedefinicao: async (email: string) => {
+  solicitarRedefinicao: async (input: string) => {
     try {
-      const response = await api.post("/auth/solicitar-redefinicao", { email });
+      const payload = { identificador: input }; // 👈 independente se é email ou CNPJ
+      const response = await api.post("/auth/solicitar-redefinicao", payload);
       return response.data;
     } catch (error: any) {
       console.error("❌ Redefinição Error:", error.response?.data || error.message);
       throw error;
     }
   },
+  
 
   redefinirSenha: async (token: string, nova_senha: string, confirmar_senha: string) => {
     try {

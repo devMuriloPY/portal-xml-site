@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileX as FileXml, Lock } from 'lucide-react';
+import { FileX as FileXml, Lock, Eye, EyeOff } from 'lucide-react';
 import { auth } from '../services/api';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -8,7 +8,16 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [cnpj, setCnpj] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // 👈 controle de visibilidade
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const expired = localStorage.getItem('sessionExpired');
+    if (expired === 'true') {
+      toast.error('⚠️ Sua sessão expirou. Faça login novamente.');
+      localStorage.removeItem('sessionExpired');
+    }
+  }, []);
 
   const formatCNPJ = (value: string) => {
     return value
@@ -28,7 +37,7 @@ const LoginPage = () => {
       const response = await auth.login(cnpj.replace(/\D/g, ''), password);
       localStorage.setItem('token', response.access_token);
       toast.success('Login realizado com sucesso!');
-      navigate('/dashboard'); // Redirect to dashboard
+      navigate('/dashboard');
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Erro ao fazer login');
     } finally {
@@ -71,14 +80,23 @@ const LoginPage = () => {
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Senha
             </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 text-gray-500 hover:text-indigo-600"
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
 
           <button
@@ -94,16 +112,10 @@ const LoginPage = () => {
         </form>
 
         <div className="mt-6 text-center space-y-2">
-          <Link
-            to="/redefinir-senha"
-            className="block text-indigo-600 hover:text-indigo-700"
-          >
+          <Link to="/redefinir-senha" className="block text-indigo-600 hover:text-indigo-700">
             Esqueceu a senha?
           </Link>
-          <Link
-            to="/primeiro-acesso"
-            className="block text-indigo-600 hover:text-indigo-700"
-          >
+          <Link to="/primeiro-acesso" className="block text-indigo-600 hover:text-indigo-700">
             Primeiro acesso? Cadastre-se aqui
           </Link>
         </div>

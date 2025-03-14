@@ -8,8 +8,8 @@ const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
-  
-  const [email, setEmail] = useState('');
+
+  const [identifier, setIdentifier] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -20,9 +20,9 @@ const ResetPasswordPage = () => {
     setIsLoading(true);
 
     try {
-      await auth.solicitarRedefinicao(email);
+      await auth.solicitarRedefinicao(identifier);
       setSubmitted(true);
-      toast.success('Se este e-mail estiver cadastrado, enviaremos um link para redefinição.');
+      toast.success('Se este e-mail ou CNPJ estiver cadastrado, enviaremos um link para redefinição.');
     } catch (error: any) {
       toast.error('Erro ao solicitar redefinição de senha');
     } finally {
@@ -104,14 +104,15 @@ const ResetPasswordPage = () => {
         ) : !submitted ? (
           <form onSubmit={handleRequestReset} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                E-mail
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-1">
+                E-mail ou CNPJ
               </label>
               <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                id="identifier"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="Digite seu e-mail ou CNPJ"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 required
               />
@@ -131,7 +132,7 @@ const ResetPasswordPage = () => {
         ) : (
           <div className="text-center">
             <div className="bg-green-50 text-green-800 p-4 rounded-lg mb-6">
-              Se este e-mail estiver cadastrado, enviaremos um link para redefinição
+              Se este e-mail ou CNPJ estiver cadastrado, enviaremos um link para redefinição
               de senha.
             </div>
             <Link
