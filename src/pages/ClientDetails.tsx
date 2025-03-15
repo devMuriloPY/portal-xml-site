@@ -10,6 +10,7 @@ import { SolicitacaoItem } from "../components/SolicitacaoItem"
 import { AccountantProfile } from "../components/AccountantProfile"
 import { api } from "../services/api"
 import type { Accountant } from "../types"
+import { confirmarExclusao } from "../components/Confirmacao"
 
 const ClientDetails = () => {
   const { id } = useParams()
@@ -50,14 +51,20 @@ const ClientDetails = () => {
   // Efeito para recarregar os dados quando o ID do cliente mudar
   useEffect(() => {
     if (!id) return
-  
+
     console.log("🔄 Carregando dados do cliente", { id, clientFromState: location.state?.client })
-  
+
     setIsLoading(true)
-    setDataInicial("")
-    setDataFinal("")
+    // 🗓️ Define automaticamente datas do mês anterior
+    const hoje = new Date()
+    const primeiroDiaMesPassado = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1)
+    const ultimoDiaMesPassado = new Date(hoje.getFullYear(), hoje.getMonth(), 0)
+
+    setDataInicial(primeiroDiaMesPassado.toISOString().split("T")[0])
+    setDataFinal(ultimoDiaMesPassado.toISOString().split("T")[0])
+
     setQuantidadeVisivel(3)
-  
+
     const carregarTudo = async () => {
       try {
         await refetch()
@@ -70,10 +77,9 @@ const ClientDetails = () => {
         setIsLoading(false)
       }
     }
-  
+
     carregarTudo()
   }, [id]) // ✅ apenas 'id' como dependência!
-  
 
   const handleSolicitacao = async () => {
     if (!dataInicial || !dataFinal) {
@@ -110,7 +116,9 @@ const ClientDetails = () => {
   }
 
   const handleExcluir = async (id_solicitacao: number) => {
-    if (!window.confirm("Deseja realmente excluir esta solicitação?")) return
+    const confirmado = await confirmarExclusao("Tem certeza que deseja excluir esta solicitação?")
+    if (!confirmado) return // Se o usuário cancelar, não faz nada
+
     try {
       await api.delete("/auth/solicitacoes", { data: { id_solicitacao } })
       toast.success("🗑️ Solicitação excluída com sucesso!")
@@ -126,60 +134,40 @@ const ClientDetails = () => {
   }
 
   // Função para lidar com a mudança de cliente na sidebar
-  const handleClientChange = (newClientId: string, newClient: any) => {
-    console.log("Client change triggered", {
-      currentId: id,
-      newClientId,
-      isMobile,
-      newClient,
+  const handleClientChange = async (newClientId: string, newClient: any) => {
+    navigate(`/clientes/${newClientId}`, {
+      state: { client: newClient },
     })
 
-    if (id === newClientId) {
-      // Mesmo cliente, mas força update (caso cliente venha com dados novos)
-      navigate(`/clientes/${newClientId}`, {
-        state: { client: newClient },
-        replace: true,
-      })
-      refetch()
-      setIsSidebarOpen(false)
-    } else {
-      // Cliente diferente
-      navigate(`/clientes/${newClientId}`, {
-        state: { client: newClient },
-      })
-      setDataInicial("")
-      setDataFinal("")
-      setQuantidadeVisivel(3)
-      refetch()
-      setIsSidebarOpen(false)
-    }
+    setDataInicial("")
+    setDataFinal("")
+    setQuantidadeVisivel(3)
+    setIsSidebarOpen(false)
   }
 
   // Custom Header Component
   const CustomHeader = () => {
     return (
-      <header className="bg-white border-b sticky top-0 z-20 px-4 lg:pl-0 lg:pr-6">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-4 lg:pl-0 lg:pr-6 shadow-md">
         <div className="flex items-center justify-between h-16 lg:ml-72">
           {/* Hamburger menu button - only visible on mobile and when sidebar is closed */}
           {isMobile && !isSidebarOpen && (
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-md bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              className="p-2 rounded-md bg-white/10 text-white hover:bg-white/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-opacity-50"
               aria-label="Abrir menu de clientes"
             >
               <Menu className="w-5 h-5" />
             </button>
           )}
-          <div className="flex items-center">
-            <h1 className="text-lg font-bold text-gray-800">Painel de Clientes</h1>
-            {cliente && (
-              <span className="bg-blue-100 text-blue-800 text-xs font-medium ml-3 px-2.5 py-1 rounded flex items-center">
-                <Building2 className="w-3 h-3 mr-1" /> {cliente.name}
-              </span>
-            )}
+
+          {/* Espaçador à esquerda */}
+          <div className="w-5"></div>
+
+          {/* Título à direita */}
+          <div className="ml-auto">
+            <h1 className="text-lg font-bold text-white whitespace-nowrap">Portal XML</h1>
           </div>
-          {/* Right side of header - now empty */}
-          <div className="w-5"></div> {/* Spacer for balance */}
         </div>
       </header>
     )
@@ -281,19 +269,21 @@ const ClientDetails = () => {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               {/* Header com status */}
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-white">{cliente.name}</h2>
-                    <p className="text-blue-100 mt-1">ID: {id}</p>
+                  <div className="max-w-full">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white break-words">
+                      {cliente.name || cliente.name}
+                    </h2>
+                    <p className="text-blue-100 mt-1 text-sm">ID: {id}</p>
                   </div>
                   {isOnline ? (
-                    <div className="flex items-center gap-2 bg-green-500 px-4 py-2 rounded-lg text-white shadow-lg">
+                    <div className="flex-shrink-0 flex items-center gap-2 bg-green-500 px-4 py-2 rounded-lg text-white shadow-lg">
                       <Wifi className="w-5 h-5 animate-pulse" />
                       <span className="font-medium">Online</span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 bg-blue-700 px-4 py-2 rounded-lg text-white shadow-lg">
+                    <div className="flex-shrink-0 flex items-center gap-2 bg-blue-800 px-4 py-2 rounded-lg text-white shadow-lg">
                       <WifiOff className="w-5 h-5" />
                       <span className="font-medium">Offline</span>
                     </div>
@@ -301,36 +291,26 @@ const ClientDetails = () => {
                 </div>
               </div>
 
-              {/* Informações do cliente */}
-              <div className="p-6 border-b">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Informações do Cliente</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-50 p-2 rounded-lg">
-                      <Building2 className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">CNPJ</p>
-                      <p className="font-medium text-gray-800">{cliente.cnpj}</p>
-                    </div>
+              {/* Informações do cliente - versão compacta */}
+              <div className="p-4 sm:p-6 border-b">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Informações do Cliente</h3>
+                <div className="flex flex-wrap gap-3">
+                  <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                    <Building2 className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm text-gray-500 mr-1">CNPJ:</span>
+                    <span className="text-sm font-medium text-gray-800">{cliente.cnpj}</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-50 p-2 rounded-lg">
-                      <Mail className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium text-gray-800">{cliente.email}</p>
-                    </div>
+
+                  <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg max-w-full">
+                    <Mail className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-500 mr-1 flex-shrink-0">Email:</span>
+                    <span className="text-sm font-medium text-gray-800 truncate">{cliente.email}</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-50 p-2 rounded-lg">
-                      <Phone className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Telefone</p>
-                      <p className="font-medium text-gray-800">{cliente.phone || "Não informado"}</p>
-                    </div>
+
+                  <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                    <Phone className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm text-gray-500 mr-1">Telefone:</span>
+                    <span className="text-sm font-medium text-gray-800">{cliente.phone || "Não informado"}</span>
                   </div>
                 </div>
               </div>
@@ -340,7 +320,7 @@ const ClientDetails = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Solicitar XML</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -354,7 +334,7 @@ const ClientDetails = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Data Final</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -408,7 +388,7 @@ const ClientDetails = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 overflow-x-auto">
                     {solicitacoes.slice(0, quantidadeVisivel).map((item) => (
                       <SolicitacaoItem key={item.id_solicitacao} item={item} onDelete={handleExcluir} />
                     ))}
@@ -430,14 +410,14 @@ const ClientDetails = () => {
             {/* Floating status indicator for better visibility */}
             <div className="fixed bottom-6 right-6 z-10">
               {isOnline ? (
-                <div className="flex items-center gap-2 bg-green-500 px-4 py-3 rounded-full text-white shadow-lg">
+                <div className="flex items-center gap-2 bg-green-500 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
                   <Wifi className="w-5 h-5 animate-pulse" />
-                  <span className="font-medium">Cliente Online</span>
+                  <span className="font-medium text-sm sm:text-base">Cliente Online</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 bg-blue-600 px-4 py-3 rounded-full text-white shadow-lg">
+                <div className="flex items-center gap-2 bg-blue-600 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
                   <WifiOff className="w-5 h-5" />
-                  <span className="font-medium">Cliente Offline</span>
+                  <span className="font-medium text-sm sm:text-base">Cliente Offline</span>
                 </div>
               )}
             </div>
