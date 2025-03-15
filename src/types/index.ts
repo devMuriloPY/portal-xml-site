@@ -14,3 +14,20 @@ export interface Accountant {
   phone?: string;
   totalClients: number;
 }
+
+export interface Solicitacao {
+  id_solicitacao: number;
+  data_solicitacao: string;
+  data_inicio: string;
+  data_fim: string;
+  status: string;
+  xml_url: string | null;
+}
+
+export interface ClienteAPI {
+  id_cliente: number;
+  nome: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+}

@@ -1,97 +1,92 @@
-import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import {
-  Calendar,
-  Link as LinkIcon,
-  Mail,
-  Phone,
-  Building2,
-  Wifi,
-  WifiOff,
-} from "lucide-react";
-import { api } from "../services/api";
-import { toast } from "react-hot-toast";
+"use client"
+import { useParams, useNavigate, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { ArrowLeft, Building2, Calendar, Mail, Phone, Wifi, WifiOff, Menu, X, Loader2 } from "lucide-react"
+import { toast } from "react-hot-toast"
+import SidebarClientes from "../components/SideBarClientes"
+import { useCliente } from "../hooks/useCliente"
+import { useHistoricoSolicitacoes } from "../hooks/useHistoricoSolicitacoes"
+import { SolicitacaoItem } from "../components/SolicitacaoItem"
+import { AccountantProfile } from "../components/AccountantProfile"
+import { api } from "../services/api"
+import type { Accountant } from "../types"
 
 const ClientDetails = () => {
-  const { id } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const client = location.state?.client;
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const [dataInicial, setDataInicial] = useState("");
-  const [dataFinal, setDataFinal] = useState("");
-  const [isOnline, setIsOnline] = useState<boolean | null>(null);
-  const [mostrarExplicacao, setMostrarExplicacao] = useState(false);
-  const [solicitacoes, setSolicitacoes] = useState<any[]>([]);
+  const [quantidadeVisivel, setQuantidadeVisivel] = useState(3)
+  const [dataInicial, setDataInicial] = useState("")
+  const [dataFinal, setDataFinal] = useState("")
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
+  const [isLoading, setIsLoading] = useState(false)
 
-  // 🗓️ Preenche dataInicial e dataFinal com o mês passado
+  // ✅ Passamos o fallbackCliente vindo da Dashboard (caso tenha sido enviado)
+  const { cliente, isOnline, refetch } = useCliente(id, location.state?.client || null)
+  const { solicitacoes, setSolicitacoes, carregar } = useHistoricoSolicitacoes(id)
+
+  // ✅ Recuperar contador do localStorage
+  const accountantRaw = localStorage.getItem("accountant")
+  const accountant: Accountant | null = accountantRaw ? JSON.parse(accountantRaw) : null
+
+  // Detect if we're on mobile based on screen width
   useEffect(() => {
-    const hoje = new Date();
-  
-    const mesPassado = hoje.getMonth() === 0 ? 11 : hoje.getMonth() - 1;
-    const anoMesPassado = hoje.getMonth() === 0 ? hoje.getFullYear() - 1 : hoje.getFullYear();
-  
-    const primeiroDia = new Date(anoMesPassado, mesPassado, 1);
-    const ultimoDia = new Date(anoMesPassado, mesPassado + 1, 0);
-  
-    const formatar = (data: Date) => {
-      const ano = data.getFullYear();
-      const mes = String(data.getMonth() + 1).padStart(2, "0");
-      const dia = String(data.getDate()).padStart(2, "0");
-      return `${ano}-${mes}-${dia}`;
-    };
-  
-    setDataInicial(formatar(primeiroDia));
-    setDataFinal(formatar(ultimoDia));
-  }, []);
-  
-
-  // 🔄 Verifica conexão com o WebSocket
-  useEffect(() => {
-    const verificarConexao = async () => {
-      try {
-        const res = await api.get("/ws/clientes-conectados");
-        const idsConectados = res.data.clientes_conectados || [];
-        setIsOnline(idsConectados.includes(Number(id)));
-      } catch (error) {
-        console.error("Erro ao verificar status do cliente:", error);
-        setIsOnline(null);
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth < 1024
+      setIsMobile(newIsMobile)
+      // Auto-close sidebar on resize to desktop
+      if (!newIsMobile) {
+        setIsSidebarOpen(false)
       }
-    };
-
-    verificarConexao();
-  }, [id]);
-
-  // 🔄 Carrega solicitações do banco
-  useEffect(() => {
-    const carregarSolicitacoes = async () => {
-      try {
-        const res = await api.get(`/auth/solicitacoes/${id}`);
-        setSolicitacoes(res.data);
-      } catch (error) {
-        console.error("Erro ao buscar solicitações:", error);
-      }
-    };
-
-    if (id) {
-      carregarSolicitacoes();
     }
-  }, [id]);
 
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  // Efeito para recarregar os dados quando o ID do cliente mudar
+  useEffect(() => {
+    if (!id) return
+  
+    console.log("🔄 Carregando dados do cliente", { id, clientFromState: location.state?.client })
+  
+    setIsLoading(true)
+    setDataInicial("")
+    setDataFinal("")
+    setQuantidadeVisivel(3)
+  
+    const carregarTudo = async () => {
+      try {
+        await refetch()
+        const solicitacoesAtualizadas = await carregar()
+        setSolicitacoes(solicitacoesAtualizadas)
+      } catch (error) {
+        console.error("Erro ao carregar dados do cliente:", error)
+        toast.error("Erro ao carregar dados do cliente")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  
+    carregarTudo()
+  }, [id]) // ✅ apenas 'id' como dependência!
   
 
   const handleSolicitacao = async () => {
     if (!dataInicial || !dataFinal) {
-      toast.error("Preencha as duas datas para continuar.");
-      return;
+      toast.error("Preencha as duas datas para continuar.")
+      return
     }
-
-    const inicio = new Date(dataInicial);
-    const fim = new Date(dataFinal);
-
-    if (inicio > fim) {
-      toast.error("A data inicial deve ser menor ou igual à data final.");
-      return;
+    if (new Date(dataInicial) > new Date(dataFinal)) {
+      toast.error("A data inicial deve ser menor ou igual à data final.")
+      return
+    }
+    if (!isOnline) {
+      toast.error("O cliente precisa estar online para enviar a solicitação.")
+      return
     }
 
     try {
@@ -99,169 +94,363 @@ const ClientDetails = () => {
         id_cliente: Number(id),
         data_inicio: dataInicial,
         data_fim: dataFinal,
-      };
-
-      const res = await api.post("/auth/solicitacoes", payload);
-
-      if (res.data?.id_solicitacao) {
-        toast.success("📨 Solicitação registrada com sucesso!");
-        setDataInicial("");
-        setDataFinal("");
-
-        // Recarrega histórico após nova solicitação
-        const updated = await api.get(`/auth/solicitacoes/${id}`);
-        setSolicitacoes(updated.data);
-      } else {
-        toast.error("Erro ao registrar solicitação.");
       }
-    } catch (err) {
-      console.error("Erro ao solicitar XML:", err);
-      toast.error("Erro ao enviar solicitação.");
+      const res = await api.post("/auth/solicitacoes", payload)
+      if (res.data?.id_solicitacao) {
+        toast.success("📨 Solicitação registrada com sucesso!")
+        setDataInicial("")
+        setDataFinal("")
+        const atualizadas = await carregar()
+        setSolicitacoes(atualizadas)
+        setQuantidadeVisivel(3)
+      }
+    } catch {
+      toast.error("Erro ao enviar solicitação.")
     }
-  };
+  }
 
-  if (!client) {
+  const handleExcluir = async (id_solicitacao: number) => {
+    if (!window.confirm("Deseja realmente excluir esta solicitação?")) return
+    try {
+      await api.delete("/auth/solicitacoes", { data: { id_solicitacao } })
+      toast.success("🗑️ Solicitação excluída com sucesso!")
+      const atualizadas = await carregar()
+      setSolicitacoes(atualizadas)
+    } catch {
+      toast.error("Erro ao excluir solicitação.")
+    }
+  }
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  // Função para lidar com a mudança de cliente na sidebar
+  const handleClientChange = (newClientId: string, newClient: any) => {
+    console.log("Client change triggered", {
+      currentId: id,
+      newClientId,
+      isMobile,
+      newClient,
+    })
+
+    if (id === newClientId) {
+      // Mesmo cliente, mas força update (caso cliente venha com dados novos)
+      navigate(`/clientes/${newClientId}`, {
+        state: { client: newClient },
+        replace: true,
+      })
+      refetch()
+      setIsSidebarOpen(false)
+    } else {
+      // Cliente diferente
+      navigate(`/clientes/${newClientId}`, {
+        state: { client: newClient },
+      })
+      setDataInicial("")
+      setDataFinal("")
+      setQuantidadeVisivel(3)
+      refetch()
+      setIsSidebarOpen(false)
+    }
+  }
+
+  // Custom Header Component
+  const CustomHeader = () => {
     return (
-      <div className="text-center py-12 text-gray-500">
-        <p className="text-lg font-semibold">Cliente não encontrado</p>
-        <p className="text-sm mt-1">Volte ao painel e tente novamente.</p>
+      <header className="bg-white border-b sticky top-0 z-20 px-4 lg:pl-0 lg:pr-6">
+        <div className="flex items-center justify-between h-16 lg:ml-72">
+          {/* Hamburger menu button - only visible on mobile and when sidebar is closed */}
+          {isMobile && !isSidebarOpen && (
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-md bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              aria-label="Abrir menu de clientes"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
+          <div className="flex items-center">
+            <h1 className="text-lg font-bold text-gray-800">Painel de Clientes</h1>
+            {cliente && (
+              <span className="bg-blue-100 text-blue-800 text-xs font-medium ml-3 px-2.5 py-1 rounded flex items-center">
+                <Building2 className="w-3 h-3 mr-1" /> {cliente.name}
+              </span>
+            )}
+          </div>
+          {/* Right side of header - now empty */}
+          <div className="w-5"></div> {/* Spacer for balance */}
+        </div>
+      </header>
+    )
+  }
+
+  // Mobile sidebar overlay with close button
+  const MobileSidebarOverlay = () => {
+    if (!isMobile || !isSidebarOpen) return null
+
+    return (
+      <div className="fixed inset-0 bg-black/10 z-50 lg:hidden" onClick={toggleSidebar}>
+        <button
+          className="absolute top-4 right-4 p-2 rounded-full bg-white text-gray-700 shadow-lg"
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleSidebar()
+          }}
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
-    );
+    )
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <SidebarClientes
+          clienteAtualId={id}
+          isOpen={isSidebarOpen}
+          onOpenChange={setIsSidebarOpen}
+          onClientSelect={handleClientChange}
+          isMobile={isMobile} // Pass isMobile prop if your SidebarClientes component accepts it
+        />
+        <div className="flex-1 flex flex-col">
+          <CustomHeader />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <Loader2 className="w-10 h-10 text-blue-500 animate-spin mx-auto mb-4" />
+              <p className="text-gray-500 font-medium">Carregando dados do cliente...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!cliente) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="text-center p-6 sm:p-8 bg-white rounded-xl shadow-lg max-w-md w-full">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Building2 className="w-8 h-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800">Cliente não encontrado</h2>
+          <p className="text-gray-500 mt-2 mb-6">Não foi possível encontrar os dados deste cliente.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" /> Voltar ao painel
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6 border border-gray-200">
-        <div className="text-center">
-          <h1 className="text-3xl font-extrabold text-gray-800">{client.name}</h1>
-          <p className="text-sm text-gray-500">Detalhes do cliente</p>
-        </div>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Pass the open state to SidebarClientes */}
+      <SidebarClientes
+        clienteAtualId={id}
+        isOpen={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+        onClientSelect={handleClientChange}
+        isMobile={isMobile} // Pass isMobile prop if your SidebarClientes component accepts it
+      />
 
-        {/* 🔷 Informações principais */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-6">
-          <div className="flex items-center gap-2 text-gray-700">
-            <Building2 className="w-5 h-5 text-blue-500" />
-            <span>{client.cnpj}</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-700">
-            <Mail className="w-5 h-5 text-blue-500" />
-            <span>{client.email}</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-700">
-            <Phone className="w-5 h-5 text-blue-500" />
-            <span>{client.phone}</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-700 relative">
-            {isOnline === true ? (
-              <>
-                <Wifi className="w-5 h-5 text-green-500 animate-pulse" />
-                <span>Status: Online</span>
-              </>
-            ) : isOnline === false ? (
-              <>
-                <WifiOff className="w-5 h-5 text-red-500 animate-pulse" />
-                <span>Status: Offline</span>
-              </>
-            ) : (
-              <span className="text-gray-400">Verificando status...</span>
-            )}
+      {/* Overlay with close button when sidebar is open on mobile */}
+      {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
 
-            <button
-              onClick={() => setMostrarExplicacao((prev) => !prev)}
-              className="ml-2 w-6 h-6 flex items-center justify-center text-sm font-bold text-blue-600 border border-blue-300 rounded-full hover:bg-blue-50 transition duration-200"
-              title="O que é isso?"
-            >
-              ?
-            </button>
-
-            {mostrarExplicacao && (
-              <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-md p-3 text-sm text-gray-700 w-72 z-10">
-                Essa informação indica se o cliente está com o <strong>Portal XML</strong> ativo no computador.
+      <div className="flex-1 flex flex-col">
+        <CustomHeader />
+        <main className="flex-1 p-4 sm:p-6 lg:ml-72">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Detalhes do Cliente</h1>
+                <p className="text-sm text-gray-500">Visualize e gerencie informações do cliente</p>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* 📩 Solicitar XML */}
-        <div className="pt-6 border-t">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Solicitar XML</h2>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <input
-              type="date"
-              value={dataInicial}
-              onChange={(e) => setDataInicial(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 w-full transition focus:ring-2 focus:ring-blue-200"
-            />
-            <input
-              type="date"
-              value={dataFinal}
-              onChange={(e) => setDataFinal(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 w-full transition focus:ring-2 focus:ring-blue-200"
-            />
-            <button
-              onClick={handleSolicitacao}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
-            >
-              Solicitar
-            </button>
-          </div>
-        </div>
-
-        {/* 📜 Histórico de Solicitações */}
-        <div className="pt-6 border-t">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Histórico de Solicitações</h2>
-          <ul className="space-y-3">
-            {solicitacoes.map((item) => (
-              <li
-                key={item.id_solicitacao}
-                className="flex items-center justify-between border p-4 rounded-lg hover:shadow-sm transition"
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 font-medium rounded-lg border border-blue-100 hover:bg-blue-50 transition shadow-sm"
               >
-                <div className="flex flex-col text-gray-700">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium">
-                      {new Date(item.data_solicitacao).toLocaleDateString()}
-                    </span>
+                <ArrowLeft className="w-4 h-4" /> Voltar
+              </button>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              {/* Header com status */}
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white">{cliente.name}</h2>
+                    <p className="text-blue-100 mt-1">ID: {id}</p>
                   </div>
-                  <div className="ml-6 text-sm text-gray-500">
-                    <span>{item.status === "concluido" ? "Concluído" : "Pendente"}</span><br />
-                    <span>
-                      Período:{" "}
-                      {new Date(item.data_inicio).toLocaleDateString()} até{" "}
-                      {new Date(item.data_fim).toLocaleDateString()}
-                    </span>
+                  {isOnline ? (
+                    <div className="flex items-center gap-2 bg-green-500 px-4 py-2 rounded-lg text-white shadow-lg">
+                      <Wifi className="w-5 h-5 animate-pulse" />
+                      <span className="font-medium">Online</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 bg-blue-700 px-4 py-2 rounded-lg text-white shadow-lg">
+                      <WifiOff className="w-5 h-5" />
+                      <span className="font-medium">Offline</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Informações do cliente */}
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Informações do Cliente</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <Building2 className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">CNPJ</p>
+                      <p className="font-medium text-gray-800">{cliente.cnpj}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <Mail className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Email</p>
+                      <p className="font-medium text-gray-800">{cliente.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                      <Phone className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Telefone</p>
+                      <p className="font-medium text-gray-800">{cliente.phone || "Não informado"}</p>
+                    </div>
                   </div>
                 </div>
-                {item.xml_url ? (
-                  <a
-                    href={item.xml_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 hover:underline"
-                  >
-                    <LinkIcon className="w-4 h-4" />
-                    Baixar XML
-                  </a>
+              </div>
+
+              {/* Solicitar XML */}
+              <div className="p-6 border-b">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Solicitar XML</h3>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="date"
+                          value={dataInicial}
+                          onChange={(e) => setDataInicial(e.target.value)}
+                          className="pl-10 w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Data Final</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="date"
+                          value={dataFinal}
+                          onChange={(e) => setDataFinal(e.target.value)}
+                          className="pl-10 w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-end">
+                      <button
+                        onClick={handleSolicitacao}
+                        disabled={!isOnline}
+                        className={`w-full sm:w-auto px-6 py-2.5 rounded-lg font-medium transition-colors ${
+                          isOnline
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : "bg-blue-300 text-white cursor-not-allowed"
+                        }`}
+                      >
+                        {isOnline ? "Solicitar" : "Cliente Offline"}
+                      </button>
+                    </div>
+                  </div>
+                  {!isOnline && (
+                    <p className="mt-2 text-sm text-red-500">
+                      O cliente precisa estar online para enviar solicitações.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Histórico de Solicitações */}
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">Histórico de Solicitações</h3>
+                  <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                    {solicitacoes.length} solicitações
+                  </span>
+                </div>
+
+                {solicitacoes.length === 0 ? (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                    <Calendar className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500 font-medium">Nenhuma solicitação encontrada</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      As solicitações de XML aparecerão aqui quando forem criadas.
+                    </p>
+                  </div>
                 ) : (
-                  <span className="text-gray-400 text-sm">Aguardando geração</span>
+                  <div className="space-y-3">
+                    {solicitacoes.slice(0, quantidadeVisivel).map((item) => (
+                      <SolicitacaoItem key={item.id_solicitacao} item={item} onDelete={handleExcluir} />
+                    ))}
+
+                    {solicitacoes.length > quantidadeVisivel && (
+                      <div className="text-center pt-4">
+                        <button
+                          onClick={() => setQuantidadeVisivel((prev) => prev + 3)}
+                          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Mostrar mais ({solicitacoes.length - quantidadeVisivel} restantes)
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
-              </li>
-            ))}
-          </ul>
-        </div>
+              </div>
+            </div>
+            {/* Floating status indicator for better visibility */}
+            <div className="fixed bottom-6 right-6 z-10">
+              {isOnline ? (
+                <div className="flex items-center gap-2 bg-green-500 px-4 py-3 rounded-full text-white shadow-lg">
+                  <Wifi className="w-5 h-5 animate-pulse" />
+                  <span className="font-medium">Cliente Online</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 bg-blue-600 px-4 py-3 rounded-full text-white shadow-lg">
+                  <WifiOff className="w-5 h-5" />
+                  <span className="font-medium">Cliente Offline</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
 
-      {/* Botão de Voltar estilizado no final */}
-      <div className="text-center mt-8">
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition duration-300"
-        >
-          ← Voltar para o Dashboard
-        </button>
-      </div>
+      {isProfileOpen && accountant && (
+        <AccountantProfile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} accountant={accountant} />
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default ClientDetails;
+export default ClientDetails
+
