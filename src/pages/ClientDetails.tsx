@@ -252,7 +252,7 @@ const ClientDetails = () => {
 
       <div className="flex-1 flex flex-col">
         <CustomHeader />
-        <main className="flex-1 p-4 sm:p-6 lg:ml-72">
+        <main className="flex-1 p-3 sm:p-6 lg:ml-72 overflow-x-hidden">
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
@@ -272,7 +272,7 @@ const ClientDetails = () => {
               <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="max-w-full">
-                    <h2 className="text-xl sm:text-2xl font-bold text-white break-words">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white break-words max-w-full overflow-hidden">
                       {cliente.name || cliente.name}
                     </h2>
                     <p className="text-blue-100 mt-1 text-sm">ID: {id}</p>
@@ -283,7 +283,7 @@ const ClientDetails = () => {
                       <span className="font-medium">Online</span>
                     </div>
                   ) : (
-                    <div className="flex-shrink-0 flex items-center gap-2 bg-blue-800 px-4 py-2 rounded-lg text-white shadow-lg">
+                    <div className="flex-shrink-0 flex items-center gap-2 bg-red-600 px-4 py-2 rounded-lg text-white shadow-lg">
                       <WifiOff className="w-5 h-5" />
                       <span className="font-medium">Offline</span>
                     </div>
@@ -294,14 +294,14 @@ const ClientDetails = () => {
               {/* Informações do cliente - versão compacta */}
               <div className="p-4 sm:p-6 border-b">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">Informações do Cliente</h3>
-                <div className="flex flex-wrap gap-3">
+                <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3">
                   <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
                     <Building2 className="w-4 h-4 text-blue-600" />
                     <span className="text-sm text-gray-500 mr-1">CNPJ:</span>
                     <span className="text-sm font-medium text-gray-800">{cliente.cnpj}</span>
                   </div>
 
-                  <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg max-w-full">
+                  <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg w-full sm:w-auto overflow-hidden">
                     <Mail className="w-4 h-4 text-blue-600 flex-shrink-0" />
                     <span className="text-sm text-gray-500 mr-1 flex-shrink-0">Email:</span>
                     <span className="text-sm font-medium text-gray-800 truncate">{cliente.email}</span>
@@ -319,7 +319,7 @@ const ClientDetails = () => {
               <div className="p-6 border-b">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Solicitar XML</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
                       <div className="relative">
@@ -355,7 +355,7 @@ const ClientDetails = () => {
                         className={`w-full sm:w-auto px-6 py-2.5 rounded-lg font-medium transition-colors ${
                           isOnline
                             ? "bg-blue-600 hover:bg-blue-700 text-white"
-                            : "bg-blue-300 text-white cursor-not-allowed"
+                            : "bg-red-300 text-white cursor-not-allowed"
                         }`}
                       >
                         {isOnline ? "Solicitar" : "Cliente Offline"}
@@ -408,14 +408,14 @@ const ClientDetails = () => {
               </div>
             </div>
             {/* Floating status indicator for better visibility */}
-            <div className="fixed bottom-6 right-6 z-10">
+            <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-10">
               {isOnline ? (
                 <div className="flex items-center gap-2 bg-green-500 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
                   <Wifi className="w-5 h-5 animate-pulse" />
                   <span className="font-medium text-sm sm:text-base">Cliente Online</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 bg-blue-600 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
+                <div className="flex items-center gap-2 bg-red-600 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
                   <WifiOff className="w-5 h-5" />
                   <span className="font-medium text-sm sm:text-base">Cliente Offline</span>
                 </div>

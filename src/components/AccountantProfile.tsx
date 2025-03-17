@@ -1,9 +1,10 @@
 "use client"
 
 import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, User, Building, Mail, Phone, Users } from "lucide-react"
+import { X, User, Building, Mail, Phone, Users, LogOut } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import type { Accountant } from "../types"
 
 interface AccountantProfileProps {
@@ -13,18 +14,34 @@ interface AccountantProfileProps {
 }
 
 export const AccountantProfile: React.FC<AccountantProfileProps> = ({ accountant, isOpen, onClose }) => {
+  const navigate = useNavigate()
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
+      if (e.key === "Escape") {
+        if (showLogoutConfirm) {
+          setShowLogoutConfirm(false)
+        } else {
+          onClose()
+        }
+      }
     }
 
     window.addEventListener("keydown", handleEsc)
     return () => window.removeEventListener("keydown", handleEsc)
-  }, [onClose])
+  }, [onClose, showLogoutConfirm])
 
   const formatCNPJ = (cnpj: string) => {
     if (!cnpj) return "CNPJ não informado"
     return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")
+  }
+
+  const handleLogout = () => {
+    // Limpar o token de autenticação
+    localStorage.removeItem("token")
+    // Redirecionar para a página de login
+    navigate("/login")
   }
 
   return (
@@ -38,7 +55,13 @@ export const AccountantProfile: React.FC<AccountantProfileProps> = ({ accountant
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-            onClick={onClose}
+            onClick={() => {
+              if (showLogoutConfirm) {
+                setShowLogoutConfirm(false)
+              } else {
+                onClose()
+              }
+            }}
           />
 
           {/* Painel lateral */}
@@ -128,8 +151,16 @@ export const AccountantProfile: React.FC<AccountantProfileProps> = ({ accountant
                 </div>
               </div>
 
-              {/* Rodapé com botão */}
-              <div className="p-6 border-t border-blue-100 dark:border-slate-700">
+              {/* Rodapé com botões */}
+              <div className="p-6 border-t border-blue-100 dark:border-slate-700 space-y-3">
+                <button
+                  onClick={() => setShowLogoutConfirm(true)}
+                  className="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center"
+                >
+                  <LogOut className="h-5 w-5 mr-2" />
+                  Sair da Conta
+                </button>
+
                 <button
                   onClick={onClose}
                   className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
@@ -139,8 +170,45 @@ export const AccountantProfile: React.FC<AccountantProfileProps> = ({ accountant
               </div>
             </div>
           </motion.div>
+
+          {/* Confirmação de logout */}
+          <AnimatePresence>
+            {showLogoutConfirm && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="fixed inset-0 flex items-center justify-center z-50 p-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-sm w-full border border-blue-100 dark:border-slate-700">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Confirmar Saída</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-6">
+                    Tem certeza que deseja sair da sua conta? Você precisará fazer login novamente para acessar o
+                    sistema.
+                  </p>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => setShowLogoutConfirm(false)}
+                      className="flex-1 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+                    >
+                      Sair
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </AnimatePresence>
   )
 }
+
