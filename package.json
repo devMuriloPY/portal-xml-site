@@ -12,7 +12,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "axios": "^1.6.7",
+    "axios": "^1.11.0",
     "framer-motion": "^12.4.13",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
@@ -22,6 +22,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.28.0",
+    "@types/estree": "^1.0.8",
+    "@types/json-schema": "^7.0.15",
+    "@types/prop-types": "^15.7.15",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

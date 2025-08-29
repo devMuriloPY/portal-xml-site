@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = "https://api.murilomendonca.com.br";
+const BASE_URL = "https://portal-xml-api-new-portal-xml-api.up.railway.app";
+
+//const BASE_URL = "http://localhost:5732";
 
 export const api = axios.create({
   baseURL: BASE_URL,
