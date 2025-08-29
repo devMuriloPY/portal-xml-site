@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { motion } from "framer-motion"
-import { Phone, Mail, Building, User, Eye } from "lucide-react"
+import { Phone, Mail, Building, User, Eye, Wifi, WifiOff } from "lucide-react"
 import type { Client } from "../types"
 import { Link } from "react-router-dom"
 
@@ -48,7 +48,23 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
           <div className="p-6">
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-slate-800 truncate">{client.name}</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-800 truncate">{client.name}</h3>
+                  {/* Indicador de status online/offline */}
+                  <div className="flex items-center gap-1">
+                    {client.isOnline ? (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <Wifi className="w-4 h-4" />
+                        <span className="text-xs font-medium">Online</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-gray-500">
+                        <WifiOff className="w-4 h-4" />
+                        <span className="text-xs font-medium">Offline</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="mt-2 flex items-center text-sm text-slate-500">
                   <Building className="w-4 h-4 mr-2 text-blue-500" />
                   <span>{formatCNPJ(client.cnpj) || "CNPJ não informado"}</span>
@@ -80,7 +96,22 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
             </div>
           </div>
 
-          <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-t border-blue-100 rounded-b-2xl flex justify-end">
+          <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-t border-blue-100 rounded-b-2xl flex justify-between items-center">
+            {/* Status online/offline na parte inferior */}
+            <div className="flex items-center gap-2">
+              {client.isOnline ? (
+                <div className="flex items-center gap-1 text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium">Conectado</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 text-gray-500">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-xs font-medium">Desconectado</span>
+                </div>
+              )}
+            </div>
+            
             <Link
               to={`/clientes/${client.id}`}
               state={{ client }}

@@ -4,6 +4,7 @@ export interface Client {
   cnpj: string;
   email: string;
   phone: string;
+  isOnline?: boolean;
 }
 
 export interface Accountant {

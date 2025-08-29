@@ -9,6 +9,7 @@ import { AccountantProfile } from "../components/AccountantProfile"
 import { api } from "../services/api"
 import type { Client, Accountant } from "../types/index"
 import { motion, AnimatePresence } from "framer-motion"
+import { useClientesOnline } from "../hooks/useClientesOnline"
 
 const Dashboard: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([])
@@ -17,6 +18,9 @@ const Dashboard: React.FC = () => {
   const [accountant, setAccountant] = useState<Accountant | null>(null)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  // Hook para verificar status online dos clientes
+  const { isClienteOnline } = useClientesOnline(clients)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +33,7 @@ const Dashboard: React.FC = () => {
           cnpj: cliente.cnpj,
           email: cliente.email,
           phone: cliente.telefone,
+          isOnline: false, // Será atualizado pelo hook
         }))
 
         setClients(formattedClients)
@@ -56,6 +61,34 @@ const Dashboard: React.FC = () => {
 
     fetchData()
   }, [])
+
+  // Atualiza o status online dos clientes quando o hook retorna dados
+  useEffect(() => {
+    if (clients.length > 0) {
+      const updatedClients = clients.map(client => ({
+        ...client,
+        isOnline: isClienteOnline(client.id)
+      }))
+      
+      setClients(updatedClients)
+      
+      // Atualiza também os clientes filtrados
+      if (searchTerm) {
+        const updatedFiltered = updatedClients.filter((client) => {
+          const name = String(client.name || "").toLowerCase().trim()
+          const cnpj = String(client.cnpj || "").replace(/\D/g, "")
+          const normalizedText = searchTerm.toLowerCase().trim()
+          const numericText = searchTerm.replace(/\D/g, "").trim()
+          const isNumericSearch = /^\d+$/.test(numericText)
+          
+          return name.includes(normalizedText) || (isNumericSearch && cnpj.includes(numericText))
+        })
+        setFilteredClients(updatedFiltered)
+      } else {
+        setFilteredClients(updatedClients)
+      }
+    }
+  }, [clients.length, isClienteOnline, searchTerm])
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
