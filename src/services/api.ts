@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://portal-xml-api-new-portal-xml-api.up.railway.app";
+const BASE_URL = "http://gosks0kwskokowo08gokkow4.72.60.147.139.sslip.io";
 
 //const BASE_URL = "http://localhost:5732";
 
