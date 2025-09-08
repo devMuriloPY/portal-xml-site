@@ -1,8 +1,7 @@
 import axios from "axios";
+import { getApiBaseUrl } from "../config/environment";
 
-const BASE_URL = "http://gosks0kwskokowo08gokkow4.72.60.147.139.sslip.io";
-
-//const BASE_URL = "http://localhost:5732";
+const BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
   baseURL: BASE_URL,
