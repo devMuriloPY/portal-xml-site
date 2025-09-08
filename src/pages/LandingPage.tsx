@@ -1,5 +1,17 @@
 import { Link } from "react-router-dom"
-import { FileXIcon as FileXml, Users, ArrowRight, Shield, Clock, ChevronRight, Network, CheckCircle, Download, BarChart3, FileCheck } from 'lucide-react'
+import {
+  FileX2 as FileXml,
+  Users,
+  ArrowRight,
+  Shield,
+  Clock,
+  ChevronRight,
+  Network,
+  CheckCircle,
+  Download,
+  BarChart3,
+  FileCheck,
+} from "lucide-react"
 
 const LandingPage = () => {
   return (
@@ -17,13 +29,13 @@ const LandingPage = () => {
                 to="/login"
                 className="px-5 py-2.5 text-white bg-blue-700/30 backdrop-blur-sm hover:bg-blue-700/50 rounded-lg font-medium transition-all duration-300 border border-white/20"
               >
-                Login
+                Acessar Portal
               </Link>
               <Link
                 to="/primeiro-acesso"
                 className="px-5 py-2.5 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-300 font-medium shadow-lg shadow-blue-900/20 flex items-center"
               >
-                Primeiro Acesso
+                Solicitar Acesso
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </div>
@@ -37,42 +49,42 @@ const LandingPage = () => {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium text-sm mb-6">
               <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2"></span>
-              Plataforma para Contadores
+              WM Sistemas de Gestão
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-              Simplifique o acesso aos <span className="text-blue-600">arquivos XML</span> dos seus clientes
+              Acesse os <span className="text-blue-600">XMLs dos seus clientes</span> integrados ao nosso ERP
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-              O Portal XML é a plataforma ideal para contadores acessarem e solicitarem arquivos XML de seus clientes de
-              forma segura e eficiente. Centralize todas as suas demandas em um só lugar.
+              Portal exclusivo para contadores parceiros da WM Sistemas. Seus clientes já estão vinculados
+              automaticamente - basta buscar e baixar os XMLs de forma prática e segura.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
               <Link
                 to="/login"
                 className="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg shadow-blue-500/30 font-medium group"
               >
-                Começar agora
+                Acessar Portal
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/primeiro-acesso"
                 className="inline-flex items-center justify-center px-8 py-3.5 border border-blue-200 bg-white text-blue-600 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 font-medium"
               >
-                Saiba mais
+                Solicitar Acesso
               </Link>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
               <div className="flex items-center bg-white px-4 py-2 rounded-full shadow-sm">
                 <Shield className="h-4 w-4 text-blue-600 mr-2" />
-                Seguro
+                Integrado ao ERP
               </div>
               <div className="flex items-center bg-white px-4 py-2 rounded-full shadow-sm">
                 <Clock className="h-4 w-4 text-blue-600 mr-2" />
-                Rápido
+                Acesso Imediato
               </div>
               <div className="flex items-center bg-white px-4 py-2 rounded-full shadow-sm">
                 <Users className="h-4 w-4 text-blue-600 mr-2" />
-                Confiável
+                Clientes Vinculados
               </div>
             </div>
           </div>
@@ -91,20 +103,20 @@ const LandingPage = () => {
         {/* Features Section */}
         <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Como o Portal XML funciona</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Como funciona a integração</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Uma plataforma intuitiva projetada para otimizar o fluxo de trabalho contábil
+              Solução integrada ao ERP da WM Sistemas para máxima praticidade
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white p-8 rounded-xl shadow-lg shadow-blue-100 border border-blue-50 hover:shadow-xl hover:border-blue-100 transition-all duration-300 group">
               <div className="p-3 bg-blue-50 rounded-lg inline-block mb-5 group-hover:bg-blue-100 transition-colors duration-300">
                 <Users className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">Acesso Simplificado</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-800">Clientes Pré-Vinculados</h3>
               <p className="text-gray-600">
-                Login seguro com CNPJ e gerenciamento eficiente de documentos para todos os seus clientes.
+                Seus clientes que já utilizam o ERP da WM Sistemas aparecem automaticamente vinculados ao seu acesso.
               </p>
             </div>
 
@@ -112,9 +124,10 @@ const LandingPage = () => {
               <div className="p-3 bg-blue-50 rounded-lg inline-block mb-5 group-hover:bg-blue-100 transition-colors duration-300">
                 <FileXml className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">Arquivos XML</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-800">XMLs Sempre Atualizados</h3>
               <p className="text-gray-600">
-                Solicite e gerencie arquivos XML de múltiplos clientes em um só lugar com facilidade.
+                Acesse os XMLs mais recentes diretamente do ERP, com sincronização automática e dados sempre
+                atualizados.
               </p>
             </div>
 
@@ -122,9 +135,9 @@ const LandingPage = () => {
               <div className="p-3 bg-blue-50 rounded-lg inline-block mb-5 group-hover:bg-blue-100 transition-colors duration-300">
                 <Network className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">Conexão em Rede</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-800">Integração Total</h3>
               <p className="text-gray-600">
-                Conecte-se com seus clientes em tempo real para solicitar e receber arquivos XML instantaneamente.
+                Portal integrado ao sistema de gestão, garantindo consistência e confiabilidade nos dados acessados.
               </p>
             </div>
           </div>
@@ -133,9 +146,9 @@ const LandingPage = () => {
         {/* Seção de benefícios */}
         <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Sobre o Portal XML</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Vantagens da parceria WM Sistemas</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Nossa plataforma foi desenvolvida pensando nas necessidades específicas dos contadores.
+              Um portal exclusivo desenvolvido para otimizar o trabalho dos contadores parceiros.
             </p>
           </div>
 
@@ -146,10 +159,10 @@ const LandingPage = () => {
                   <CheckCircle className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Economia de tempo</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Sem configurações complexas</h3>
                   <p className="text-gray-600">
-                    Reduza o tempo gasto com solicitações manuais de arquivos XML. Nossa plataforma automatiza todo o
-                    processo.
+                    Seus clientes já aparecem vinculados automaticamente. Não há necessidade de configurar conexões ou
+                    solicitar acessos individuais.
                   </p>
                 </div>
               </div>
@@ -161,10 +174,10 @@ const LandingPage = () => {
                   <CheckCircle className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Segurança avançada</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Dados direto do ERP</h3>
                   <p className="text-gray-600">
-                    Seus dados e os de seus clientes estão protegidos com criptografia de ponta a ponta e autenticação
-                    segura.
+                    XMLs extraídos diretamente do sistema de gestão, garantindo autenticidade e integridade das
+                    informações fiscais.
                   </p>
                 </div>
               </div>
@@ -176,9 +189,9 @@ const LandingPage = () => {
                   <CheckCircle className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Interface intuitiva</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Interface familiar</h3>
                   <p className="text-gray-600">
-                    Design moderno e fácil de usar, permitindo que você e sua equipe comecem a usar imediatamente.
+                    Design intuitivo que segue os padrões da WM Sistemas, facilitando a adaptação e uso imediato.
                   </p>
                 </div>
               </div>
@@ -190,10 +203,9 @@ const LandingPage = () => {
                   <CheckCircle className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Suporte especializado</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Suporte especializado WM</h3>
                   <p className="text-gray-600">
-                    Nossa equipe de suporte está disponível para ajudar com qualquer dúvida ou problema que você possa
-                    ter.
+                    Conte com o suporte técnico da WM Sistemas, que já conhece seu perfil e necessidades como parceiro.
                   </p>
                 </div>
               </div>
@@ -204,20 +216,21 @@ const LandingPage = () => {
         {/* Funcionalidades adicionais */}
         <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Funcionalidades principais</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Recursos do Portal XML</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Ferramentas que facilitam o dia a dia do contador
+              Ferramentas desenvolvidas especificamente para contadores parceiros
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
               <div className="p-3 bg-blue-50 rounded-lg inline-block mb-4">
                 <Download className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">Download em Lote</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">Download Inteligente</h3>
               <p className="text-gray-600">
-                Baixe múltiplos arquivos XML de uma só vez, economizando tempo e organizando automaticamente.
+                Baixe XMLs por período, cliente ou tipo de documento. Organização automática por pastas e nomenclatura
+                padronizada.
               </p>
             </div>
 
@@ -225,9 +238,10 @@ const LandingPage = () => {
               <div className="p-3 bg-blue-50 rounded-lg inline-block mb-4">
                 <BarChart3 className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">Relatórios</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">Histórico Completo</h3>
               <p className="text-gray-600">
-                Acompanhe todas as solicitações e downloads com relatórios completos sobre o status de cada documento.
+                Visualize todo o histórico de acessos e downloads, com filtros por cliente e período para controle
+                total.
               </p>
             </div>
 
@@ -235,9 +249,9 @@ const LandingPage = () => {
               <div className="p-3 bg-blue-50 rounded-lg inline-block mb-4">
                 <FileCheck className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">Validação Automática</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">Validação Integrada</h3>
               <p className="text-gray-600">
-                Verificação automática da integridade e validade dos arquivos XML recebidos para garantir conformidade.
+                XMLs já validados pelo ERP da WM Sistemas, garantindo conformidade fiscal e reduzindo retrabalho.
               </p>
             </div>
           </div>
@@ -247,22 +261,22 @@ const LandingPage = () => {
         <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 sm:p-10 shadow-xl">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold text-white mb-6">Pronto para simplificar sua rotina?</h2>
+              <h2 className="text-3xl font-bold text-white mb-6">Pronto para acessar seus clientes WM?</h2>
               <p className="text-blue-100 text-lg mb-8">
-                Otimize seu fluxo de trabalho com o Portal XML e foque no que realmente importa.
+                Faça login e encontre seus clientes já vinculados automaticamente. Praticidade e integração total.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   to="/login"
                   className="px-8 py-3.5 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-300 font-medium shadow-lg"
                 >
-                  Fazer Login
+                  Acessar Portal
                 </Link>
                 <Link
                   to="/primeiro-acesso"
                   className="px-8 py-3.5 bg-blue-700/30 backdrop-blur-sm text-white border border-white/20 rounded-lg hover:bg-blue-700/50 transition-all duration-300 font-medium"
                 >
-                  Criar Conta
+                  Solicitar Acesso
                 </Link>
               </div>
             </div>
@@ -279,7 +293,7 @@ const LandingPage = () => {
               <span className="text-xl font-bold text-gray-800">Portal XML</span>
             </div>
             <div className="text-sm text-gray-500">
-              © {new Date().getFullYear()} Portal XML. Todos os direitos reservados.
+              © {new Date().getFullYear()} WM Sistemas de Gestão. Todos os direitos reservados.
             </div>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">
