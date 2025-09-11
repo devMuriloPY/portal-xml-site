@@ -148,8 +148,8 @@ const ClientDetails = () => {
   // Custom Header Component
   const CustomHeader = () => {
     return (
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-4 lg:pl-0 lg:pr-6 shadow-md">
-        <div className="flex items-center justify-between h-16 lg:ml-72">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-4 shadow-md">
+        <div className="flex items-center justify-between h-16">
           {/* Hamburger menu button - only visible on mobile and when sidebar is closed */}
           {isMobile && !isSidebarOpen && (
             <button
@@ -183,7 +183,7 @@ const ClientDetails = () => {
     if (!isMobile || !isSidebarOpen) return null
 
     return (
-      <div className="fixed inset-0 bg-black/10 z-50 lg:hidden" onClick={toggleSidebar}>
+      <div className="fixed inset-0 bg-black/10 z-50 lg:hidden top-16" onClick={toggleSidebar}>
         <button
           className="absolute top-4 right-4 p-2 rounded-full bg-white text-gray-700 shadow-lg"
           onClick={(e) => {
@@ -242,23 +242,26 @@ const ClientDetails = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Pass the open state to SidebarClientes */}
-      <SidebarClientes
-        clienteAtualId={id}
-        isOpen={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-        onClientSelect={handleClientChange}
-        isMobile={isMobile} // Pass isMobile prop if your SidebarClientes component accepts it
-      />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header que ocupa toda a largura */}
+      <CustomHeader />
+      
+      <div className="flex">
+        {/* Pass the open state to SidebarClientes */}
+        <SidebarClientes
+          clienteAtualId={id}
+          isOpen={isSidebarOpen}
+          onOpenChange={setIsSidebarOpen}
+          onClientSelect={handleClientChange}
+          isMobile={isMobile} // Pass isMobile prop if your SidebarClientes component accepts it
+        />
 
-      {/* Overlay with close button when sidebar is open on mobile */}
-      {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
+        {/* Overlay with close button when sidebar is open on mobile */}
+        {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
 
-      <div className="flex-1 flex flex-col">
-        <CustomHeader />
-        <main className="flex-1 p-3 sm:p-6 lg:ml-72 overflow-x-hidden">
-          <div className="max-w-5xl mx-auto">
+        <div className="flex-1 flex flex-col">
+          <main className="flex-1 p-3 sm:p-6 lg:ml-72 overflow-x-hidden">
+            <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Detalhes do Cliente</h1>
@@ -491,6 +494,7 @@ const ClientDetails = () => {
             </div>
           </div>
         </main>
+        </div>
       </div>
 
       {isProfileOpen && accountant && (

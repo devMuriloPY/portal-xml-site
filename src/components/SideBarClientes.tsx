@@ -102,8 +102,8 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
 
   return (
     <aside
-      className={`bg-white border-r shadow-lg h-screen overflow-hidden transition-all duration-300 z-40 
-        ${isMobile ? "fixed inset-y-0 left-0 w-[85%] max-w-[300px]" : "w-72 fixed top-0 left-0"}
+      className={`bg-white border-r shadow-lg overflow-hidden transition-all duration-300 z-40 
+        ${isMobile ? "fixed inset-y-0 left-0 w-[85%] max-w-[300px] top-16" : "w-72 fixed top-16 left-0 h-[calc(100vh-4rem)]"}
         ${isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"}`}
     >
       <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800">
@@ -137,7 +137,7 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto h-[calc(100vh-130px)]">
+      <div className="flex-1 overflow-y-auto h-[calc(100vh-210px)]">
         {clientesFiltrados.length > 0 ? (
           <ul className="divide-y">
             {clientesFiltrados.map((cliente) => (
