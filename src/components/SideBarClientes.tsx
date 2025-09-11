@@ -103,10 +103,20 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
   return (
     <aside
       className={`bg-white border-r shadow-lg overflow-hidden transition-all duration-300 z-40 
-        ${isMobile ? "fixed inset-y-0 left-0 w-[85%] max-w-[300px] top-16" : "w-72 fixed top-16 left-0 h-[calc(100vh-4rem)]"}
+        ${isMobile ? "w-[85%] max-w-[300px]" : "w-72"}
         ${isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"}`}
+      style={{ 
+        position: 'fixed',
+        top: '4rem',
+        left: '0',
+        height: 'calc(100vh - 4rem)',
+        zIndex: 40,
+        transform: isMobile && !isOpen ? 'translateX(-100%)' : 'translateX(0)',
+        willChange: 'transform'
+      }}
     >
-      <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800">
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800">
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-white" />
           <h2 className="font-semibold text-white">Lista de Clientes</h2>
@@ -120,9 +130,9 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
             <X className="w-5 h-5" />
           </button>
         )}
-      </div>
+        </div>
 
-      <div className="p-4 border-b">
+        <div className="p-4 border-b">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="w-4 h-4 text-gray-400" />
@@ -135,9 +145,9 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
             className="pl-10 pr-3 py-2 w-full rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
           />
         </div>
-      </div>
+        </div>
 
-      <div className="flex-1 overflow-y-auto h-[calc(100vh-210px)]">
+        <div className="flex-1 overflow-y-auto" style={{ overflowY: 'auto' }}>
         {clientesFiltrados.length > 0 ? (
           <ul className="divide-y">
             {clientesFiltrados.map((cliente) => (
@@ -165,9 +175,9 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
             <p className="text-sm text-gray-400 mt-1">Tente outro termo de busca</p>
           </div>
         )}
-      </div>
+        </div>
 
-      {clienteAtualId && (
+        {clienteAtualId && (
         <div className="p-4 border-t bg-blue-50">
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 text-white p-1.5 rounded-md">
@@ -181,7 +191,8 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
             </div>
           </div>
         </div>
-      )}
+        )}
+      </div>
     </aside>
   )
 }

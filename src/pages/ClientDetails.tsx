@@ -144,7 +144,7 @@ const ClientDetails = () => {
   // Custom Header Component
   const CustomHeader = () => {
     return (
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-2 sm:px-4 shadow-md w-full">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b fixed top-0 left-0 right-0 z-20 px-2 sm:px-4 shadow-md w-full">
         <div className="flex items-center justify-between h-16">
           {/* Título à esquerda */}
           <div className="flex items-center gap-3">
@@ -193,17 +193,17 @@ const ClientDetails = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="bg-gray-50 w-full overflow-x-hidden">
+        <CustomHeader />
         <SidebarClientes
           clienteAtualId={id}
           isOpen={isSidebarOpen}
           onOpenChange={setIsSidebarOpen}
           onClientSelect={handleClientChange}
-          isMobile={isMobile} // Pass isMobile prop if your SidebarClientes component accepts it
+          isMobile={isMobile}
         />
-        <div className="flex-1 flex flex-col">
-          <CustomHeader />
-          <div className="flex-1 flex items-center justify-center">
+        <div className="w-full lg:ml-72">
+          <div className="flex items-center justify-center" style={{ marginTop: '4rem', minHeight: 'calc(100vh - 4rem)' }}>
             <div className="text-center">
               <Loader2 className="w-10 h-10 text-blue-500 animate-spin mx-auto mb-4" />
               <p className="text-gray-500 font-medium">Carregando dados do cliente...</p>
@@ -216,44 +216,55 @@ const ClientDetails = () => {
 
   if (!cliente) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="text-center p-6 sm:p-8 bg-white rounded-xl shadow-lg max-w-md w-full">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Building2 className="w-8 h-8 text-red-500" />
+      <div className="bg-gray-50 w-full overflow-x-hidden">
+        <CustomHeader />
+        <SidebarClientes
+          clienteAtualId={id}
+          isOpen={isSidebarOpen}
+          onOpenChange={setIsSidebarOpen}
+          onClientSelect={handleClientChange}
+          isMobile={isMobile}
+        />
+        <div className="w-full lg:ml-72">
+          <div className="flex items-center justify-center px-4" style={{ marginTop: '4rem', minHeight: 'calc(100vh - 4rem)' }}>
+            <div className="text-center p-6 sm:p-8 bg-white rounded-xl shadow-lg max-w-md w-full">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Building2 className="w-8 h-8 text-red-500" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-800">Cliente não encontrado</h2>
+              <p className="text-gray-500 mt-2 mb-6">Não foi possível encontrar os dados deste cliente.</p>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+              >
+                <ArrowLeft className="w-4 h-4" /> Voltar ao painel
+              </button>
+            </div>
           </div>
-          <h2 className="text-xl font-bold text-gray-800">Cliente não encontrado</h2>
-          <p className="text-gray-500 mt-2 mb-6">Não foi possível encontrar os dados deste cliente.</p>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
-          >
-            <ArrowLeft className="w-4 h-4" /> Voltar ao painel
-          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
+    <div className="bg-gray-50 w-full overflow-x-hidden">
       {/* Header que ocupa toda a largura */}
       <CustomHeader />
       
-      <div className="flex w-full">
-        {/* Pass the open state to SidebarClientes */}
-        <SidebarClientes
-          clienteAtualId={id}
-          isOpen={isSidebarOpen}
-          onOpenChange={setIsSidebarOpen}
-          onClientSelect={handleClientChange}
-          isMobile={isMobile} // Pass isMobile prop if your SidebarClientes component accepts it
-        />
+      {/* Sidebar fixa - renderizada fora do fluxo normal */}
+      <SidebarClientes
+        clienteAtualId={id}
+        isOpen={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+        onClientSelect={handleClientChange}
+        isMobile={isMobile}
+      />
 
-        {/* Overlay with close button when sidebar is open on mobile */}
-        {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
+      {/* Overlay with close button when sidebar is open on mobile */}
+      {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
 
-        <div className="flex-1 flex flex-col w-full">
-          <main className="flex-1 p-2 sm:p-4 lg:p-6 lg:ml-72 overflow-x-hidden w-full">
+      <div className="w-full lg:ml-72">
+        <main className="p-2 sm:p-4 lg:p-6 overflow-x-hidden w-full" style={{ marginTop: '4rem' }}>
             <div className="max-w-4xl w-full px-2 sm:px-0">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
@@ -477,7 +488,6 @@ const ClientDetails = () => {
             </div>
           </div>
         </main>
-        </div>
       </div>
 
       {isProfileOpen && accountant && (
