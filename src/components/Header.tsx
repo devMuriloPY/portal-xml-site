@@ -4,12 +4,14 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { User, Menu, X } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 interface HeaderProps {
   onProfileClick: () => void
 }
 
 export const Header: React.FC<HeaderProps> = ({ onProfileClick }) => {
+  const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -31,13 +33,14 @@ export const Header: React.FC<HeaderProps> = ({ onProfileClick }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Título do sistema */}
-          <motion.div
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="text-xl font-bold text-white"
+            onClick={() => navigate("/dashboard")}
+            className="text-xl font-bold text-white hover:text-blue-200 transition-colors cursor-pointer"
           >
             Portal XML
-          </motion.div>
+          </motion.button>
 
           {/* Ações à direita */}
           <div className="flex items-center space-x-2">
