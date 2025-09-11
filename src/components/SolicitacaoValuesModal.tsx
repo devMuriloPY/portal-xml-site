@@ -35,8 +35,8 @@ export const SolicitacaoValuesModal = ({ isOpen, onClose, solicitacao }: Props) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white">
           <div className="flex items-center justify-between">
@@ -61,7 +61,7 @@ export const SolicitacaoValuesModal = ({ isOpen, onClose, solicitacao }: Props) 
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="p-3 sm:p-6 overflow-y-auto flex-1">
           {/* Informações da Solicitação */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <h3 className="font-semibold text-gray-800 mb-2">Informações da Solicitação</h3>
@@ -249,11 +249,11 @@ export const SolicitacaoValuesModal = ({ isOpen, onClose, solicitacao }: Props) 
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 border-t">
+        <div className="bg-gray-50 px-3 sm:px-6 py-3 sm:py-4 border-t flex-shrink-0">
           <div className="flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"
             >
               Fechar
             </button>
