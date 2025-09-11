@@ -166,7 +166,12 @@ const ClientDetails = () => {
 
           {/* Título à direita */}
           <div className="ml-auto">
-            <h1 className="text-lg font-bold text-white whitespace-nowrap">Portal XML</h1>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="text-lg font-bold text-white whitespace-nowrap hover:text-blue-200 transition-colors cursor-pointer"
+            >
+              Portal XML
+            </button>
           </div>
         </div>
       </header>
