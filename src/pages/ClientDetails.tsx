@@ -144,7 +144,7 @@ const ClientDetails = () => {
   // Custom Header Component
   const CustomHeader = () => {
     return (
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-4 shadow-md">
+      <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-2 sm:px-4 shadow-md w-full">
         <div className="flex items-center justify-between h-16">
           {/* Título à esquerda */}
           <div className="flex items-center gap-3">
@@ -235,11 +235,11 @@ const ClientDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       {/* Header que ocupa toda a largura */}
       <CustomHeader />
       
-      <div className="flex">
+      <div className="flex w-full">
         {/* Pass the open state to SidebarClientes */}
         <SidebarClientes
           clienteAtualId={id}
@@ -252,9 +252,9 @@ const ClientDetails = () => {
         {/* Overlay with close button when sidebar is open on mobile */}
         {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
 
-        <div className="flex-1 flex flex-col">
-          <main className="flex-1 p-3 sm:p-6 lg:ml-72 overflow-x-hidden">
-            <div className="max-w-5xl mx-auto">
+        <div className="flex-1 flex flex-col w-full">
+          <main className="flex-1 p-2 sm:p-4 lg:p-6 lg:ml-72 overflow-x-hidden w-full">
+            <div className="max-w-5xl mx-auto w-full px-2 sm:px-0">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Detalhes do Cliente</h1>
@@ -268,7 +268,7 @@ const ClientDetails = () => {
               </button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden w-full">
               {/* Header com status */}
               <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -293,7 +293,7 @@ const ClientDetails = () => {
               </div>
 
               {/* Informações do cliente - versão compacta */}
-              <div className="p-4 sm:p-6 border-b">
+              <div className="p-3 sm:p-4 lg:p-6 border-b">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">Informações do Cliente</h3>
                 <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3">
                   <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
@@ -317,7 +317,7 @@ const ClientDetails = () => {
               </div>
 
               {/* Solicitar XML */}
-              <div className="p-6 border-b">
+              <div className="p-3 sm:p-4 lg:p-6 border-b">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Solicitar XML</h3>
                 
                 {/* Cards de datas padrão */}
@@ -420,7 +420,7 @@ const ClientDetails = () => {
               </div>
 
               {/* Histórico de Solicitações */}
-              <div className="p-6">
+              <div className="p-3 sm:p-4 lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold text-gray-800">Histórico de Solicitações</h3>
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
