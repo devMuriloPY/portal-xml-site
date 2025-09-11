@@ -323,7 +323,7 @@ const ClientDetails = () => {
                 {/* Cards de datas padrão */}
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-3">Períodos rápidos:</p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     {(() => {
                       const hoje = new Date()
                       const meses = []
@@ -353,10 +353,13 @@ const ClientDetails = () => {
                             mes.toISOString().split('T')[0],
                             ultimoDiaMes.toISOString().split('T')[0]
                           )}
-                          className="w-20 h-16 p-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-lg transition-colors text-center flex flex-col justify-center"
+                          className="flex-1 p-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-lg transition-colors text-left"
                         >
-                          <div className="text-xs font-medium leading-tight">
+                          <div className="text-sm font-medium mb-1">
                             {formatarMes(mes)}
+                          </div>
+                          <div className="text-xs text-blue-600">
+                            {mes.toLocaleDateString('pt-BR')} - {ultimoDiaMes.toLocaleDateString('pt-BR')}
                           </div>
                         </button>
                       ))
