@@ -353,7 +353,7 @@ const ClientDetails = () => {
                             mes.toISOString().split('T')[0],
                             ultimoDiaMes.toISOString().split('T')[0]
                           )}
-                          className="flex-1 aspect-square p-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-lg transition-colors text-center flex flex-col justify-center"
+                          className="w-20 h-16 p-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-lg transition-colors text-center flex flex-col justify-center"
                         >
                           <div className="text-xs font-medium leading-tight">
                             {formatarMes(mes)}
