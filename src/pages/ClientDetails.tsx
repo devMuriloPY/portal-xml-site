@@ -253,8 +253,8 @@ const ClientDetails = () => {
         {isMobile && isSidebarOpen && <MobileSidebarOverlay />}
 
         <div className="flex-1 flex flex-col w-full">
-          <main className="flex-1 p-2 sm:p-4 lg:p-6 lg:ml-72 overflow-x-hidden w-full">
-            <div className="max-w-5xl mx-auto w-full px-2 sm:px-0">
+          <main className="flex-1 p-2 sm:p-4 lg:p-6 lg:ml-72 overflow-x-hidden w-full flex justify-center">
+            <div className="max-w-5xl w-full px-2 sm:px-0">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Detalhes do Cliente</h1>
