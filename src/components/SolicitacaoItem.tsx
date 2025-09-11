@@ -2,6 +2,7 @@ import { Calendar, Link as LinkIcon, Trash2, Copy, Check, BarChart3 } from "luci
 import { Solicitacao } from "../types/index";
 import { useState } from "react";
 import { SolicitacaoValuesModal } from "./SolicitacaoValuesModal";
+import { ConfirmacaoModal } from "./ConfirmacaoModal";
 
 interface Props {
   item: Solicitacao;
@@ -11,6 +12,7 @@ interface Props {
 export const SolicitacaoItem = ({ item, onDelete }: Props) => {
   const [copied, setCopied] = useState(false);
   const [isValuesModalOpen, setIsValuesModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleCopyLink = async () => {
     try {
@@ -163,7 +165,7 @@ export const SolicitacaoItem = ({ item, onDelete }: Props) => {
           <span className="text-gray-400 text-sm">Aguardando geração</span>
         )}
         
-        <button onClick={() => onDelete(item.id_solicitacao)} title="Excluir">
+        <button onClick={() => setIsDeleteModalOpen(true)} title="Excluir">
           <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
         </button>
       </div>
@@ -173,6 +175,15 @@ export const SolicitacaoItem = ({ item, onDelete }: Props) => {
         isOpen={isValuesModalOpen}
         onClose={() => setIsValuesModalOpen(false)}
         solicitacao={item}
+      />
+
+      {/* Modal de Confirmação de Exclusão */}
+      <ConfirmacaoModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => onDelete(item.id_solicitacao)}
+        mensagem="Tem certeza que deseja excluir esta solicitação? Esta ação não pode ser desfeita."
+        titulo="Excluir Solicitação"
       />
     </li>
   );

@@ -10,7 +10,6 @@ import { SolicitacaoItem } from "../components/SolicitacaoItem"
 import { AccountantProfile } from "../components/AccountantProfile"
 import { api } from "../services/api"
 import type { Accountant } from "../types"
-import { confirmarExclusao } from "../components/Confirmacao"
 
 const ClientDetails = () => {
   const { id } = useParams()
@@ -116,9 +115,6 @@ const ClientDetails = () => {
   }
 
   const handleExcluir = async (id_solicitacao: number) => {
-    const confirmado = await confirmarExclusao("Tem certeza que deseja excluir esta solicitação?")
-    if (!confirmado) return // Se o usuário cancelar, não faz nada
-
     try {
       await api.delete("/auth/solicitacoes", { data: { id_solicitacao } })
       toast.success("🗑️ Solicitação excluída com sucesso!")
