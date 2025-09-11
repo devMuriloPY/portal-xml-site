@@ -1,6 +1,7 @@
-import { Calendar, Link as LinkIcon, Trash2, Copy, Check } from "lucide-react";
+import { Calendar, Link as LinkIcon, Trash2, Copy, Check, BarChart3 } from "lucide-react";
 import { Solicitacao } from "../types/index";
 import { useState } from "react";
+import { SolicitacaoValuesModal } from "./SolicitacaoValuesModal";
 
 interface Props {
   item: Solicitacao;
@@ -9,6 +10,7 @@ interface Props {
 
 export const SolicitacaoItem = ({ item, onDelete }: Props) => {
   const [copied, setCopied] = useState(false);
+  const [isValuesModalOpen, setIsValuesModalOpen] = useState(false);
 
   const handleCopyLink = async () => {
     try {
@@ -56,6 +58,16 @@ export const SolicitacaoItem = ({ item, onDelete }: Props) => {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Botão Visualizar Valores */}
+        <button
+          onClick={() => setIsValuesModalOpen(true)}
+          className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
+          title="Visualizar valores da solicitação"
+        >
+          <BarChart3 className="w-4 h-4" />
+          Valores
+        </button>
+
         {item.xml_url ? (
           <>
             {/* Botão de Download */}
@@ -101,6 +113,13 @@ export const SolicitacaoItem = ({ item, onDelete }: Props) => {
           <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
         </button>
       </div>
+
+      {/* Modal de Valores */}
+      <SolicitacaoValuesModal
+        isOpen={isValuesModalOpen}
+        onClose={() => setIsValuesModalOpen(false)}
+        solicitacao={item}
+      />
     </li>
   );
 };
