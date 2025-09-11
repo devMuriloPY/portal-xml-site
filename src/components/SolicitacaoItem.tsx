@@ -35,29 +35,83 @@ export const SolicitacaoItem = ({ item, onDelete }: Props) => {
   };
 
   return (
-    <li className="flex items-center justify-between border p-4 rounded-xl bg-gray-50 hover:bg-white transition">
-      <div className="flex flex-col text-gray-700">
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-400" />
-          <span className="font-medium">
-          {(() => {
-            const [data, hora] = item.data_solicitacao.split("T"); // "2025-03-15", "09:30:03"
-            const [ano, mes, dia] = data.split("-");
-            const horaFormatada = hora.slice(0, 5); // "09:30"
-            return `${dia}/${mes}/${ano}, ${horaFormatada}`;
-          })()}
-        </span>
-
-        </div>
-        <div className="ml-6 text-sm text-gray-500">
-          <span>{item.status === "concluido" ? "Concluído" : "Pendente"}</span><br />
-          <span>
-            Período: {new Date(item.data_inicio).toLocaleDateString()} até {new Date(item.data_fim).toLocaleDateString()}
+    <li className="border p-4 rounded-xl bg-gray-50 hover:bg-white transition">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        {/* Informações da Solicitação */}
+        <div className="flex flex-col text-gray-700">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-gray-400" />
+            <span className="font-medium">
+            {(() => {
+              const [data, hora] = item.data_solicitacao.split("T"); // "2025-03-15", "09:30:03"
+              const [ano, mes, dia] = data.split("-");
+              const horaFormatada = hora.slice(0, 5); // "09:30"
+              return `${dia}/${mes}/${ano}, ${horaFormatada}`;
+            })()}
           </span>
+          </div>
+          <div className="ml-6 text-sm text-gray-500">
+            <span>{item.status === "concluido" ? "Concluído" : "Pendente"}</span><br />
+            <span>
+              Período: {new Date(item.data_inicio).toLocaleDateString()} até {new Date(item.data_fim).toLocaleDateString()}
+            </span>
+          </div>
+        </div>
+
+        {/* Resumo dos Valores */}
+        <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-wrap items-center gap-3 lg:gap-4">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-gray-600">Autorizadas:</span>
+              <span className="font-semibold text-green-700">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format((item.valor_nfe_autorizadas || 0) + (item.valor_nfc_autorizadas || 0))}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <span className="text-gray-600">Canceladas:</span>
+              <span className="font-semibold text-red-700">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format((item.valor_nfe_canceladas || 0) + (item.valor_nfc_canceladas || 0))}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 lg:gap-4">
+            <div className="flex items-center gap-1">
+              <span className="text-gray-600">Total Emitido:</span>
+              <span className="font-semibold text-blue-700">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(
+                  (item.valor_nfe_autorizadas || 0) + 
+                  (item.valor_nfc_autorizadas || 0) + 
+                  (item.valor_nfe_canceladas || 0) + 
+                  (item.valor_nfc_canceladas || 0)
+                )}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-gray-600">Qtd. Autorizadas:</span>
+              <span className="font-semibold text-green-700">
+                {new Intl.NumberFormat("pt-BR").format(
+                  (item.quantidade_nfe_autorizadas || 0) + 
+                  (item.quantidade_nfc_autorizadas || 0)
+                )}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* Ações */}
+      <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-gray-200">
         {/* Botão Visualizar Valores */}
         <button
           onClick={() => setIsValuesModalOpen(true)}
