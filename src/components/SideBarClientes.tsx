@@ -106,15 +106,15 @@ const SidebarClientes: React.FC<SidebarClientesProps> = ({
         ${isMobile ? "fixed inset-y-0 left-0 w-[85%] max-w-[300px]" : "w-72 fixed top-0 left-0"}
         ${isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"}`}
     >
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-600 to-blue-800">
         <div className="flex items-center gap-2">
-          <Users className="w-5 h-5 text-blue-600" />
-          <h2 className="font-semibold text-gray-800">Lista de Clientes</h2>
+          <Users className="w-5 h-5 text-white" />
+          <h2 className="font-semibold text-white">Lista de Clientes</h2>
         </div>
         {isMobile && (
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1 rounded-md text-gray-500 hover:bg-gray-200 transition-colors"
+            className="p-1 rounded-md text-white hover:bg-white/20 transition-colors"
             aria-label="Fechar sidebar"
           >
             <X className="w-5 h-5" />
