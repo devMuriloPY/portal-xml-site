@@ -323,7 +323,7 @@ const ClientDetails = () => {
                 {/* Cards de datas padrão */}
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-3">Períodos rápidos:</p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="flex gap-2">
                     {(() => {
                       const hoje = new Date()
                       const meses = []
@@ -346,13 +346,6 @@ const ClientDetails = () => {
                         setDataFinal(dataFinal)
                       }
                       
-                      const cores = [
-                        'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800',
-                        'bg-green-50 hover:bg-green-100 border-green-200 text-green-800',
-                        'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-800',
-                        'bg-orange-50 hover:bg-orange-100 border-orange-200 text-orange-800'
-                      ]
-                      
                       return meses.map(({ mes, ultimoDiaMes }, index) => (
                         <button
                           key={index}
@@ -360,13 +353,10 @@ const ClientDetails = () => {
                             mes.toISOString().split('T')[0],
                             ultimoDiaMes.toISOString().split('T')[0]
                           )}
-                          className={`p-3 ${cores[index]} border rounded-lg transition-colors text-left`}
+                          className="flex-1 aspect-square p-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 rounded-lg transition-colors text-center flex flex-col justify-center"
                         >
-                          <div className="text-sm font-medium">
+                          <div className="text-xs font-medium leading-tight">
                             {formatarMes(mes)}
-                          </div>
-                          <div className="text-xs mt-1 opacity-75">
-                            {mes.toLocaleDateString('pt-BR')} - {ultimoDiaMes.toLocaleDateString('pt-BR')}
                           </div>
                         </button>
                       ))
