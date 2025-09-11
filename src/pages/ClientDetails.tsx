@@ -472,20 +472,6 @@ const ClientDetails = () => {
                 )}
               </div>
             </div>
-            {/* Floating status indicator for better visibility */}
-            <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-10">
-              {isOnline ? (
-                <div className="flex items-center gap-2 bg-green-500 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
-                  <Wifi className="w-5 h-5 animate-pulse" />
-                  <span className="font-medium text-sm sm:text-base">Cliente Online</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 bg-red-600 px-3 sm:px-4 py-2 sm:py-3 rounded-full text-white shadow-lg">
-                  <WifiOff className="w-5 h-5" />
-                  <span className="font-medium text-sm sm:text-base">Cliente Offline</span>
-                </div>
-              )}
-            </div>
           </div>
         </main>
       </div>

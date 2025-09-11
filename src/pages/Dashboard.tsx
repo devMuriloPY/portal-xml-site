@@ -6,9 +6,11 @@ import { Header } from "../components/Header"
 import { SearchBar } from "../components/SearchBar"
 import { ClientList } from "../components/ClientList"
 import { AccountantProfile } from "../components/AccountantProfile"
+import { FeedbackModal } from "../components/FeedbackModal"
 import { api } from "../services/api"
 import type { Client, Accountant } from "../types/index"
 import { motion, AnimatePresence } from "framer-motion"
+import { MessageSquare } from "lucide-react"
 import { useClientesOnline } from "../hooks/useClientesOnline"
 
 const Dashboard: React.FC = () => {
@@ -17,6 +19,7 @@ const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [accountant, setAccountant] = useState<Accountant | null>(null)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   // Hook para verificar status online dos clientes
@@ -182,6 +185,21 @@ const Dashboard: React.FC = () => {
           <AccountantProfile accountant={accountant} isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
         )}
       </AnimatePresence>
+
+      {/* Botão de Feedback Flutuante */}
+      <button
+        onClick={() => setIsFeedbackOpen(true)}
+        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl z-40"
+        title="Enviar Feedback"
+      >
+        <MessageSquare className="w-6 h-6" />
+      </button>
+
+      {/* Modal de Feedback */}
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
     </div>
   )
 }
