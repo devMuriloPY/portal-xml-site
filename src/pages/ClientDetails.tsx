@@ -146,6 +146,16 @@ const ClientDetails = () => {
     return (
       <header className="bg-gradient-to-r from-blue-600 to-blue-800 border-b sticky top-0 z-20 px-4 shadow-md">
         <div className="flex items-center justify-between h-16">
+          {/* Título à esquerda */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="text-lg font-bold text-white whitespace-nowrap hover:text-blue-200 transition-colors cursor-pointer"
+            >
+              Portal XML
+            </button>
+          </div>
+
           {/* Hamburger menu button - only visible on mobile and when sidebar is closed */}
           {isMobile && !isSidebarOpen && (
             <button
@@ -156,19 +166,6 @@ const ClientDetails = () => {
               <Menu className="w-5 h-5" />
             </button>
           )}
-
-          {/* Espaçador à esquerda */}
-          <div className="w-5"></div>
-
-          {/* Título à direita */}
-          <div className="ml-auto">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-lg font-bold text-white whitespace-nowrap hover:text-blue-200 transition-colors cursor-pointer"
-            >
-              Portal XML
-            </button>
-          </div>
         </div>
       </header>
     )
