@@ -323,16 +323,22 @@ const ClientDetails = () => {
                 {/* Cards de datas padrão */}
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-3">Períodos rápidos:</p>
-                  <div className="flex gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {(() => {
                       const hoje = new Date()
-                      const mesAnterior = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1)
-                      const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0)
-                      const mesAtual = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
-                      const ultimoDiaMesAtual = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)
+                      const meses = []
+                      
+                      // Gerar os últimos 4 meses (sem contar o atual)
+                      for (let i = 4; i >= 1; i--) {
+                        const mes = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+                        const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() - i + 1, 0)
+                        meses.push({ mes, ultimoDiaMes })
+                      }
                       
                       const formatarMes = (data: Date) => {
-                        return data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+                        const nomeMes = data.toLocaleDateString('pt-BR', { month: 'long' })
+                        const ano = data.getFullYear()
+                        return `${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} ${ano}`
                       }
                       
                       const aplicarPeriodo = (dataInicial: string, dataFinal: string) => {
@@ -340,39 +346,30 @@ const ClientDetails = () => {
                         setDataFinal(dataFinal)
                       }
                       
-                      return (
-                        <>
-                          <button
-                            onClick={() => aplicarPeriodo(
-                              mesAnterior.toISOString().split('T')[0],
-                              ultimoDiaMesAnterior.toISOString().split('T')[0]
-                            )}
-                            className="flex-1 p-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors text-left"
-                          >
-                            <div className="text-sm font-medium text-blue-800">
-                              {formatarMes(mesAnterior)}
-                            </div>
-                            <div className="text-xs text-blue-600 mt-1">
-                              {mesAnterior.toLocaleDateString('pt-BR')} - {ultimoDiaMesAnterior.toLocaleDateString('pt-BR')}
-                            </div>
-                          </button>
-                          
-                          <button
-                            onClick={() => aplicarPeriodo(
-                              mesAtual.toISOString().split('T')[0],
-                              ultimoDiaMesAtual.toISOString().split('T')[0]
-                            )}
-                            className="flex-1 p-3 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-colors text-left"
-                          >
-                            <div className="text-sm font-medium text-green-800">
-                              {formatarMes(mesAtual)}
-                            </div>
-                            <div className="text-xs text-green-600 mt-1">
-                              {mesAtual.toLocaleDateString('pt-BR')} - {ultimoDiaMesAtual.toLocaleDateString('pt-BR')}
-                            </div>
-                          </button>
-                        </>
-                      )
+                      const cores = [
+                        'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800',
+                        'bg-green-50 hover:bg-green-100 border-green-200 text-green-800',
+                        'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-800',
+                        'bg-orange-50 hover:bg-orange-100 border-orange-200 text-orange-800'
+                      ]
+                      
+                      return meses.map(({ mes, ultimoDiaMes }, index) => (
+                        <button
+                          key={index}
+                          onClick={() => aplicarPeriodo(
+                            mes.toISOString().split('T')[0],
+                            ultimoDiaMes.toISOString().split('T')[0]
+                          )}
+                          className={`p-3 ${cores[index]} border rounded-lg transition-colors text-left`}
+                        >
+                          <div className="text-sm font-medium">
+                            {formatarMes(mes)}
+                          </div>
+                          <div className="text-xs mt-1 opacity-75">
+                            {mes.toLocaleDateString('pt-BR')} - {ultimoDiaMes.toLocaleDateString('pt-BR')}
+                          </div>
+                        </button>
+                      ))
                     })()}
                   </div>
                 </div>
