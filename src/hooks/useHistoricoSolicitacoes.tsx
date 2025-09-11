@@ -37,7 +37,7 @@ export const useHistoricoSolicitacoes = (id: string | undefined) => {
         );
         
         if (antiga && !antiga.xml_url && nova.xml_url) {
-          toast.success("✅ XML gerado com sucesso!");
+          toast.success("XML gerado com sucesso!");
         }
       });
 
