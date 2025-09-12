@@ -47,8 +47,17 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
         >
           <motion.div
             variants={item}
-            whileHover={{ y: -4, scale: 1.01 }}
-            className="bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+            whileHover={{ 
+              y: -8, 
+              scale: 1.02,
+              transition: { 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                duration: 0.3
+              }
+            }}
+            className="bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-lg cursor-pointer"
           >
             <div className="p-6">
               <div className="flex items-start">
