@@ -89,6 +89,70 @@ export const auth = {
     }
   },
 
+  // Novo fluxo OTP - Solicitar código
+  requestPasswordReset: async (identifier: string) => {
+    try {
+      const response = await api.post("/auth/password/otp/request", {
+        identifier
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Request Password Reset Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Novo fluxo OTP - Verificar código
+  verifyPasswordResetCode: async (identifier: string, code: string) => {
+    try {
+      const response = await api.post("/auth/password/otp/verify", {
+        identifier,
+        code
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Verify Code Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Novo fluxo OTP - Definir nova senha usando reset_token
+  resetPasswordWithToken: async (newPassword: string) => {
+    try {
+      const resetToken = localStorage.getItem('resetToken');
+      if (!resetToken) {
+        throw new Error('Token de redefinição não encontrado');
+      }
+
+      // Criar uma instância do axios sem interceptors para evitar conflito com token de login
+      const resetApi = axios.create({
+        baseURL: BASE_URL,
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${resetToken}`
+        }
+      });
+
+      const response = await resetApi.post("/auth/password/reset", {
+        new_password: newPassword
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Reset Password Error:", error.response?.data || error.message);
+      
+      // Se token inválido/expirado, limpar localStorage
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        localStorage.removeItem('resetToken');
+        localStorage.removeItem('resetIdentifier');
+        localStorage.removeItem('verifiedCode');
+      }
+      
+      throw error;
+    }
+  },
+
+  // Métodos antigos mantidos para compatibilidade (podem ser removidos depois)
   solicitarRedefinicao: async (input: string) => {
     try {
       const payload = { identificador: input }; // 👈 independente se é email ou CNPJ

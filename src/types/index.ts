@@ -40,3 +40,30 @@ export interface ClienteAPI {
   email: string;
   telefone: string;
 }
+
+// Tipos para o novo fluxo de redefinição de senha com OTP
+export interface PasswordResetRequest {
+  identifier: string; // email ou CNPJ
+}
+
+export interface PasswordResetRequestResponse {
+  message: string; // Sempre: "Se existir uma conta, enviamos um código para o e-mail cadastrado."
+}
+
+export interface PasswordResetVerify {
+  identifier: string;
+  code: string; // código de 4 dígitos
+}
+
+export interface PasswordResetVerifyResponse {
+  status: "ok" | "error";
+  reset_token?: string; // JWT token para usar no header Authorization
+}
+
+export interface PasswordResetConfirm {
+  new_password: string;
+}
+
+export interface PasswordResetConfirmResponse {
+  message: string; // "Senha atualizada."
+}

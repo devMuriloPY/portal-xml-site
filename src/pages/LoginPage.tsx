@@ -257,7 +257,7 @@ const LoginPage = () => {
 
               <div className="flex justify-end">
                 <Link
-                  to="/redefinir-senha"
+                  to="/forgot-password"
                   className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition-all duration-300 hover:scale-105 font-medium"
                 >
                   Esqueceu a senha?
