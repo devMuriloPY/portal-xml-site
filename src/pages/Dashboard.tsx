@@ -7,10 +7,12 @@ import { SearchBar } from "../components/SearchBar"
 import { ClientList } from "../components/ClientList"
 import { AccountantProfile } from "../components/AccountantProfile"
 import { FeedbackModal } from "../components/FeedbackModal"
+import BatchRequestModal from "../components/BatchRequestModal"
+import BatchProgressModal from "../components/BatchProgressModal"
 import { api } from "../services/api"
 import type { Client, Accountant } from "../types/index"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageSquare } from "lucide-react"
+import { MessageSquare, Users } from "lucide-react"
 import { useClientesOnline } from "../hooks/useClientesOnline"
 
 const Dashboard: React.FC = () => {
@@ -20,6 +22,9 @@ const Dashboard: React.FC = () => {
   const [accountant, setAccountant] = useState<Accountant | null>(null)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false)
+  const [isBatchProgressOpen, setIsBatchProgressOpen] = useState(false)
+  const [currentBatchId, setCurrentBatchId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   // Hook para verificar status online dos clientes
@@ -109,13 +114,36 @@ const Dashboard: React.FC = () => {
     setFilteredClients(filtered)
   }
 
+  const handleBatchSuccess = (batchId: string) => {
+    setCurrentBatchId(batchId)
+    setIsBatchProgressOpen(true)
+  }
+
+  const handleCloseBatchProgress = () => {
+    setIsBatchProgressOpen(false)
+    setCurrentBatchId(null)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header onProfileClick={() => setIsProfileOpen(true)} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <SearchBar value={searchTerm} onChange={handleSearch} />
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex-1">
+              <SearchBar value={searchTerm} onChange={handleSearch} />
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setIsBatchModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+            >
+              <Users className="h-4 w-4" />
+              Solicitar em Lotes
+            </motion.button>
+          </div>
         </motion.div>
 
         <div className="mt-8">
@@ -200,6 +228,23 @@ const Dashboard: React.FC = () => {
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
       />
+
+      {/* Modal de Solicitação em Lotes */}
+      <BatchRequestModal
+        isOpen={isBatchModalOpen}
+        onClose={() => setIsBatchModalOpen(false)}
+        onSuccess={handleBatchSuccess}
+        clients={clients}
+      />
+
+      {/* Modal de Progresso do Lote */}
+      {currentBatchId && (
+        <BatchProgressModal
+          isOpen={isBatchProgressOpen}
+          onClose={handleCloseBatchProgress}
+          batchId={currentBatchId}
+        />
+      )}
     </div>
   )
 }

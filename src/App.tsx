@@ -9,9 +9,35 @@ import VerifyCodePage from "./pages/VerifyCodePage";
 import NewPasswordPage from "./pages/NewPasswordPage";
 import Dashboard from "./pages/Dashboard";
 import ClientDetails from "./pages/ClientDetails";
+import MaintenancePage from "./pages/MaintenancePage";
 import { Toaster } from "react-hot-toast";
+import { useMaintenance } from "./hooks/useMaintenance";
 
 function App() {
+  const { isMaintenanceMode, isLoading } = useMaintenance();
+
+  // Se está em modo de manutenção, mostrar apenas a página de manutenção
+  if (isMaintenanceMode) {
+    return (
+      <>
+        <MaintenancePage />
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+      </>
+    );
+  }
+
+  // Se ainda está carregando, mostrar loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <Routes>

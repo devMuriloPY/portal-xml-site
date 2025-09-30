@@ -152,7 +152,7 @@ const ClientDetails = () => {
               onClick={() => navigate("/dashboard")}
               className="text-lg font-bold text-white whitespace-nowrap hover:text-blue-200 transition-colors cursor-pointer"
             >
-              Portal XML
+              Portal Contador
             </button>
           </div>
 

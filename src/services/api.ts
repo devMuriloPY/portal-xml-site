@@ -180,3 +180,56 @@ export const auth = {
     }
   },
 };
+
+// Serviços para solicitação em lotes
+export const batchRequests = {
+  // Criar solicitação em lote
+  createBatch: async (data: { client_ids: string[]; data_inicio: string; data_fim: string }) => {
+    try {
+      const response = await api.post("/auth/solicitacoes/batch", data);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Create Batch Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Consultar status do lote
+  getBatchStatus: async (batchId: string) => {
+    try {
+      const response = await api.get(`/auth/solicitacoes/batch/${batchId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Get Batch Status Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Listar lotes do usuário
+  getBatches: async (page: number = 1, limit: number = 10, status?: string) => {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(status && status !== 'all' && { status })
+      });
+      
+      const response = await api.get(`/auth/solicitacoes/batch?${params}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Get Batches Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+
+  // Cancelar lote
+  cancelBatch: async (batchId: string) => {
+    try {
+      const response = await api.delete(`/auth/solicitacoes/batch/${batchId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Cancel Batch Error:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+};

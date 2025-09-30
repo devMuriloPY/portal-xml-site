@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({ onProfileClick }) => {
             onClick={() => navigate("/dashboard")}
             className="text-xl font-bold text-white hover:text-blue-200 transition-colors cursor-pointer"
           >
-            Portal XML
+            Portal Contador
           </motion.button>
 
           {/* Ações à direita */}

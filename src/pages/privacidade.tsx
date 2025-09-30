@@ -10,7 +10,7 @@ const PrivacidadePage = () => {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
               <FileXml className="h-8 w-8 text-white" />
-              <span className="text-2xl font-bold text-white">Portal XML</span>
+              <span className="text-2xl font-bold text-white">Portal Contador</span>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
               <Link
@@ -46,24 +46,24 @@ const PrivacidadePage = () => {
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">1. Introdução</h2>
       <p className="text-gray-600 mb-4">
-        O <strong>Portal XML</strong> está comprometido com a proteção dos dados e a privacidade dos usuários. Esta Política de
+        O <strong>Portal Contador</strong> está comprometido com a proteção dos dados e a privacidade dos usuários. Esta Política de
         Privacidade descreve como coletamos, utilizamos, armazenamos e protegemos as informações fornecidas ao utilizar
         nossa plataforma.
       </p>
       <p className="text-gray-600 mb-4">
-        O uso do Portal XML implica na aceitação desta Política. Recomendamos a leitura completa antes de continuar a
+        O uso do Portal Contador implica na aceitação desta Política. Recomendamos a leitura completa antes de continuar a
         navegação ou uso do sistema.
       </p>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">2. Origem dos Dados XML</h2>
       <p className="text-gray-600 mb-4">
-        O <strong>Portal XML</strong> não realiza a coleta direta de informações fiscais da Sefaz. Os arquivos XML de NF-e e NFC-e
+        O <strong>Portal Contador</strong> não realiza a coleta direta de informações fiscais da Sefaz. Os arquivos XML de NF-e e NFC-e
         disponíveis na plataforma são provenientes de <strong>integrações com os sistemas ICThUS ou WM Chef</strong>, oferecidos pela
         <strong> WM Sistemas de Gestão</strong>. Esses sistemas são responsáveis por realizar a captura e armazenamento dos documentos
         fiscais dos contribuintes.
       </p>
       <p className="text-gray-600 mb-4">
-        O Portal XML atua exclusivamente como um meio de acesso e visualização dos dados, permitindo que contadores
+        O Portal Contador atua exclusivamente como um meio de acesso e visualização dos dados, permitindo que contadores
         previamente autorizados por seus clientes possam consultar, organizar e exportar os XMLs já processados pelos
         sistemas integrados.
       </p>
@@ -101,12 +101,12 @@ const PrivacidadePage = () => {
       <ul className="list-disc pl-6 mb-4 text-gray-600">
         <li>Haja consentimento do usuário</li>
         <li>Seja necessário para cumprimento de obrigações legais</li>
-        <li>O compartilhamento seja com prestadores de serviço diretamente relacionados à operação do Portal XML</li>
+        <li>O compartilhamento seja com prestadores de serviço diretamente relacionados à operação do Portal Contador</li>
       </ul>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">6. Cookies</h2>
       <p className="text-gray-600 mb-4">
-        O Portal XML utiliza cookies estritamente funcionais para manter sessões autenticadas e melhorar a navegação. Nenhum
+        O Portal Contador utiliza cookies estritamente funcionais para manter sessões autenticadas e melhorar a navegação. Nenhum
         dado de rastreamento de terceiros é coletado com fins publicitários ou analíticos externos.
       </p>
 
@@ -146,10 +146,10 @@ const PrivacidadePage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <FileXml className="h-6 w-6 text-blue-600" />
-              <span className="text-xl font-bold text-gray-800">Portal XML</span>
+              <span className="text-xl font-bold text-gray-800">Portal Contador</span>
             </div>
             <div className="text-sm text-gray-500">
-              © {new Date().getFullYear()} Portal XML. Todos os direitos reservados.
+              © {new Date().getFullYear()} Portal Contador. Todos os direitos reservados.
             </div>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">

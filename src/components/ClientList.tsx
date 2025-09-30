@@ -1,16 +1,21 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Phone, Mail, Building, Wifi, WifiOff } from "lucide-react"
 import type { Client } from "../types"
 import { Link } from "react-router-dom"
+import ClientOfflineModal from "./ClientOfflineModal"
 
 interface ClientListProps {
   clients: Client[]
 }
 
 export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
+  const [selectedOfflineClient, setSelectedOfflineClient] = useState<Client | null>(null)
+  const [isOfflineModalOpen, setIsOfflineModalOpen] = useState(false)
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -31,7 +36,21 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
     return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")
   }
 
+  const handleClientClick = (client: Client, e: React.MouseEvent) => {
+    if (!client.isOnline) {
+      e.preventDefault()
+      setSelectedOfflineClient(client)
+      setIsOfflineModalOpen(true)
+    }
+  }
+
+  const closeOfflineModal = () => {
+    setIsOfflineModalOpen(false)
+    setSelectedOfflineClient(null)
+  }
+
   return (
+    <>
     <motion.div
       variants={container}
       initial="hidden"
@@ -41,23 +60,28 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
       {clients.map((client) => (
         <Link
           key={client.id}
-          to={`/clientes/${client.id}`}
+          to={client.isOnline ? `/clientes/${client.id}` : "#"}
           state={{ client }}
           className="block"
+          onClick={(e) => handleClientClick(client, e)}
         >
           <motion.div
             variants={item}
             whileHover={{ 
-              y: -8, 
-              scale: 1.02,
+              y: -6, 
+              scale: 1.01,
               transition: { 
                 type: "spring", 
-                stiffness: 300, 
-                damping: 30,
-                duration: 0.3
+                stiffness: 200, 
+                damping: 25,
+                duration: 0.4
               }
             }}
-            className="bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-lg cursor-pointer"
+            className={`bg-white border rounded-2xl shadow-sm hover:shadow-lg cursor-pointer transition-all ${
+              client.isOnline 
+                ? "border-blue-100 hover:border-blue-200" 
+                : "border-red-100 hover:border-red-200"
+            }`}
           >
             <div className="p-6">
               <div className="flex items-start">
@@ -101,7 +125,11 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-t border-blue-100 rounded-b-2xl">
+            <div className={`px-6 py-4 border-t rounded-b-2xl ${
+              client.isOnline 
+                ? "bg-gradient-to-r from-blue-50 to-blue-100 border-blue-100" 
+                : "bg-gradient-to-r from-red-50 to-orange-50 border-red-100"
+            }`}>
               {/* Status online/offline na parte inferior */}
               <div className="flex items-center justify-center gap-2">
                 {client.isOnline ? (
@@ -112,7 +140,7 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
                 ) : (
                   <div className="flex items-center gap-1 text-red-600">
                     <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <span className="text-xs font-medium">Desconectado</span>
+                    <span className="text-xs font-medium">Clique para mais informações</span>
                   </div>
                 )}
               </div>
@@ -121,5 +149,13 @@ export const ClientList: React.FC<ClientListProps> = ({ clients }) => {
         </Link>
       ))}
     </motion.div>
+
+    {/* Modal para clientes offline */}
+    <ClientOfflineModal
+      isOpen={isOfflineModalOpen}
+      onClose={closeOfflineModal}
+      client={selectedOfflineClient}
+    />
+  </>
   )
 }

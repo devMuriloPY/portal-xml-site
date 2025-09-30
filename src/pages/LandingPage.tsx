@@ -22,7 +22,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
               <FileXml className="h-8 w-8 text-white" />
-              <span className="text-2xl font-bold text-white">Portal XML</span>
+              <span className="text-2xl font-bold text-white">Portal Contador</span>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
               <Link
@@ -216,7 +216,7 @@ const LandingPage = () => {
         {/* Funcionalidades adicionais */}
         <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Recursos do Portal XML</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Recursos do Portal Contador</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Ferramentas desenvolvidas especificamente para contadores parceiros
             </p>
@@ -290,7 +290,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <FileXml className="h-6 w-6 text-blue-600" />
-              <span className="text-xl font-bold text-gray-800">Portal XML</span>
+              <span className="text-xl font-bold text-gray-800">Portal Contador</span>
             </div>
             <div className="text-sm text-gray-500">
               © {new Date().getFullYear()} WM Sistemas de Gestão. Todos os direitos reservados.

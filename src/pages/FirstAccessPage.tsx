@@ -160,12 +160,12 @@ const FirstAccessPage = () => {
                 <div className="bg-blue-50 p-2 rounded-lg group-hover:bg-blue-100 transition-colors">
                   <FileXml className="h-8 w-8 text-blue-600" />
                 </div>
-                <span className="text-2xl font-bold text-gray-800">Portal XML</span>
+                <span className="text-2xl font-bold text-gray-800">Portal Contador</span>
               </Link>
             </div>
 
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">Primeiro Acesso</h2>
-            <p className="text-center text-gray-500 mb-8">Crie sua senha para acessar o Portal XML</p>
+            <p className="text-center text-gray-500 mb-8">Crie sua senha para acessar o Portal Contador</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
@@ -355,7 +355,7 @@ const FirstAccessPage = () => {
 
         {/* Footer */}
         <div className="mt-6 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} Portal XML. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Portal Contador. Todos os direitos reservados.</p>
           <div className="mt-2 space-x-4">
             <Link to="/privacidade" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors">
               Privacidade

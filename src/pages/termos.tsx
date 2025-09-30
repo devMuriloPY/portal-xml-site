@@ -10,7 +10,7 @@ const TermosPage = () => {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
               <FileXml className="h-8 w-8 text-white" />
-              <span className="text-2xl font-bold text-white">Portal XML</span>
+              <span className="text-2xl font-bold text-white">Portal Contador</span>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
               <Link
@@ -45,26 +45,26 @@ const TermosPage = () => {
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">1. Aceitação dos Termos</h2>
       <p className="text-gray-600 mb-4">
-        Ao utilizar o <strong>Portal XML</strong>, você concorda com estes Termos de Uso. Caso não esteja de acordo com qualquer cláusula
+        Ao utilizar o <strong>Portal Contador</strong>, você concorda com estes Termos de Uso. Caso não esteja de acordo com qualquer cláusula
         aqui presente, recomendamos que não utilize a plataforma.
       </p>
 
-      <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">2. Sobre o Portal XML</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">2. Sobre o Portal Contador</h2>
       <p className="text-gray-600 mb-4">
-        O <strong>Portal XML</strong> é uma plataforma de apoio voltada para contadores e escritórios contábeis. Seu objetivo é
+        O <strong>Portal Contador</strong> é uma plataforma de apoio voltada para contadores e escritórios contábeis. Seu objetivo é
         centralizar e facilitar o acesso aos arquivos XML de documentos fiscais eletrônicos (NF-e e NFC-e) emitidos ou
         recebidos pelos clientes dos contadores.
       </p>
       <p className="text-gray-600 mb-4">
         A recuperação dos arquivos XML é feita <strong>a partir de integrações com os sistemas ICThUS ou WM Chef</strong>, ambos
         oferecidos pela <strong>WM Sistemas de Gestão</strong>, que são responsáveis por coletar e armazenar os documentos fiscais
-        dos contribuintes. O <strong>Portal XML</strong> atua apenas como uma camada de visualização e solicitação de dados já previamente organizados
+        dos contribuintes. O <strong>Portal Contador</strong> atua apenas como uma camada de visualização e solicitação de dados já previamente organizados
         por esses sistemas.
       </p>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">3. Contas e Acesso</h2>
       <p className="text-gray-600 mb-4">
-        Para utilizar o <strong>Portal XML</strong>, é necessário possuir uma conta de acesso. O usuário é responsável por manter suas
+        Para utilizar o <strong>Portal Contador</strong>, é necessário possuir uma conta de acesso. O usuário é responsável por manter suas
         credenciais seguras e não compartilhar informações com terceiros.
       </p>
       <p className="text-gray-600 mb-4">
@@ -74,7 +74,7 @@ const TermosPage = () => {
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">4. Integração com Sistemas Terceiros</h2>
       <p className="text-gray-600 mb-4">
-        O <strong>Portal XML</strong> não coleta diretamente informações da Sefaz ou de qualquer outro órgão governamental. Toda a base de
+        O <strong>Portal Contador</strong> não coleta diretamente informações da Sefaz ou de qualquer outro órgão governamental. Toda a base de
         dados disponível na plataforma é proveniente da <strong>integração com os sistemas da WM Sistemas de Gestão</strong> (ICThUS ou WM Chef),
         previamente contratados e configurados pelo cliente emissor.
       </p>
@@ -84,7 +84,7 @@ const TermosPage = () => {
       </p>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">5. Uso Permitido</h2>
-      <p className="text-gray-600 mb-4">É proibido utilizar o <strong>Portal XML</strong> para:</p>
+      <p className="text-gray-600 mb-4">É proibido utilizar o <strong>Portal Contador</strong> para:</p>
       <ul className="list-disc pl-6 mb-4 text-gray-600">
         <li>Consultar informações de empresas sem autorização expressa</li>
         <li>Distribuir ou manipular dados fiscais de forma indevida</li>
@@ -94,14 +94,14 @@ const TermosPage = () => {
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">6. Limitação de Responsabilidade</h2>
       <p className="text-gray-600 mb-4">
-        O <strong>Portal XML</strong> não se responsabiliza por falhas na entrega, exibição ou precisão dos documentos XML fornecidos
+        O <strong>Portal Contador</strong> não se responsabiliza por falhas na entrega, exibição ou precisão dos documentos XML fornecidos
         pelos sistemas integrados. A plataforma atua como um <strong>meio técnico</strong> de acesso aos dados já coletados por terceiros,
         sendo o contador e os sistemas integradores os responsáveis pela origem, integridade e autorização de acesso aos dados.
       </p>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">7. Cancelamento e Rescisão</h2>
       <p className="text-gray-600 mb-4">
-        O <strong>Portal XML</strong> se reserva o direito de suspender ou encerrar o acesso de usuários que violem estes termos,
+        O <strong>Portal Contador</strong> se reserva o direito de suspender ou encerrar o acesso de usuários que violem estes termos,
         sem aviso prévio. O usuário pode encerrar sua conta a qualquer momento por meio do suporte.
       </p>
 
@@ -115,7 +115,7 @@ const TermosPage = () => {
       <p className="text-gray-600 mb-4">
         Estes termos serão interpretados de acordo com as leis da <strong>República Federativa do Brasil</strong>. Qualquer litígio
         relacionado ao uso da plataforma deverá ser resolvido no foro da comarca de domicílio da empresa responsável pelo
-        <strong>Portal XML</strong>.
+        <strong>Portal Contador</strong>.
       </p>
 
       <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-4">10. Contato</h2>
@@ -135,10 +135,10 @@ const TermosPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <FileXml className="h-6 w-6 text-blue-600" />
-              <span className="text-xl font-bold text-gray-800">Portal XML</span>
+              <span className="text-xl font-bold text-gray-800">Portal Contador</span>
             </div>
             <div className="text-sm text-gray-500">
-              © {new Date().getFullYear()} Portal XML. Todos os direitos reservados.
+              © {new Date().getFullYear()} Portal Contador. Todos os direitos reservados.
             </div>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">

@@ -142,7 +142,7 @@ const LoginPage = () => {
                   <FileXml className="h-8 w-8 text-blue-600 group-hover:text-blue-700 transition-colors" />
                 </div>
                 <span className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-indigo-600 transition-all duration-300">
-                  Portal XML
+                  Portal Contador
                 </span>
               </Link>
             </div>
@@ -315,7 +315,7 @@ const LoginPage = () => {
 
         {/* Footer */}
         <div className="mt-8 text-center text-gray-500 text-sm">
-          <p className="mb-3">© {new Date().getFullYear()} Portal XML. Todos os direitos reservados.</p>
+          <p className="mb-3">© {new Date().getFullYear()} Portal Contador. Todos os direitos reservados.</p>
           <div className="flex justify-center space-x-6">
             <Link 
               to="/privacidade" 
