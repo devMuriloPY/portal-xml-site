@@ -83,7 +83,7 @@ export const useBatchRequests = () => {
 };
 
 // Hook para monitorar um lote específico
-export const useBatchMonitor = (batchId: string | null, interval: number = 5000) => {
+export const useBatchMonitor = (batchId: string | null, interval: number = 8000) => {
   const [batch, setBatch] = useState<BatchRequest | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

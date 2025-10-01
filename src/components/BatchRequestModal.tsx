@@ -1,9 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Users, Search, Check, AlertCircle } from 'lucide-react';
 import type { Client } from '../types';
 import { useBatchRequests } from '../hooks/useBatchRequests';
 import toast from 'react-hot-toast';
+
+// Componente otimizado para item de cliente
+const ClientItem = memo(({ client, isSelected, onToggle }: {
+  client: Client;
+  isSelected: boolean;
+  onToggle: (id: string) => void;
+}) => (
+  <label className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={isSelected}
+      onChange={() => onToggle(client.id)}
+      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+    />
+    <div className="ml-3 flex-1">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-900">
+          {client.name}
+        </span>
+        <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+          Online
+        </span>
+      </div>
+      <p className="text-xs text-gray-500">
+        CNPJ: {client.cnpj}
+      </p>
+    </div>
+  </label>
+));
 
 interface BatchRequestModalProps {
   isOpen: boolean;
@@ -26,14 +55,22 @@ const BatchRequestModal: React.FC<BatchRequestModalProps> = ({
   const [dataFim, setDataFim] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Filtrar apenas clientes online
-  const onlineClients = clients.filter(client => client.isOnline);
-
-  // Filtrar clientes por termo de busca
-  const filteredClients = onlineClients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.cnpj.includes(searchTerm)
+  // Filtrar apenas clientes online (memoizado)
+  const onlineClients = useMemo(() => 
+    clients.filter(client => client.isOnline), 
+    [clients]
   );
+
+  // Filtrar clientes por termo de busca (memoizado)
+  const filteredClients = useMemo(() => {
+    if (!searchTerm.trim()) return onlineClients;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return onlineClients.filter(client =>
+      client.name.toLowerCase().includes(searchLower) ||
+      client.cnpj.includes(searchTerm)
+    );
+  }, [onlineClients, searchTerm]);
 
   // Validar datas
   const validateDates = () => {
@@ -82,8 +119,8 @@ const BatchRequestModal: React.FC<BatchRequestModalProps> = ({
     return true;
   };
 
-  // Selecionar/deselecionar cliente
-  const toggleClient = (clientId: string) => {
+  // Selecionar/deselecionar cliente (memoizado)
+  const toggleClient = useCallback((clientId: string) => {
     setSelectedClients(prev => {
       if (prev.includes(clientId)) {
         return prev.filter(id => id !== clientId);
@@ -95,22 +132,22 @@ const BatchRequestModal: React.FC<BatchRequestModalProps> = ({
     if (errors.clients) {
       setErrors(prev => ({ ...prev, clients: '' }));
     }
-  };
+  }, [errors.clients]);
 
-  // Selecionar todos os clientes filtrados
-  const selectAll = () => {
+  // Selecionar todos os clientes filtrados (memoizado)
+  const selectAll = useCallback(() => {
     const allFilteredIds = filteredClients.map(client => client.id);
     setSelectedClients(allFilteredIds);
     setErrors(prev => ({ ...prev, clients: '' }));
-  };
+  }, [filteredClients]);
 
-  // Deselecionar todos
-  const deselectAll = () => {
+  // Deselecionar todos (memoizado)
+  const deselectAll = useCallback(() => {
     setSelectedClients([]);
-  };
+  }, []);
 
-  // Submeter formulário
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Submeter formulário (memoizado)
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateDates() || !validateClients()) {
@@ -118,19 +155,55 @@ const BatchRequestModal: React.FC<BatchRequestModalProps> = ({
     }
 
     try {
+      console.log("🔍 Dados antes do envio:", {
+        selectedClients,
+        dataInicio,
+        dataFim,
+        selectedClientsLength: selectedClients.length
+      });
+
+      // Garantir formato correto das datas (YYYY-MM-DD)
+      const dataInicioFormat = dataInicio; // Já está no formato correto
+      const dataFimFormat = dataFim; // Já está no formato correto
+      
+      // Garantir que client_ids sejam array de strings
+      const clientIdsFormatted = selectedClients.map(id => String(id));
+      
+      console.log("📅 Datas formatadas:", { 
+        dataInicio: dataInicioFormat, 
+        dataFim: dataFimFormat 
+      });
+      
+      console.log("🆔 Client IDs formatados:", {
+        original: selectedClients,
+        formatted: clientIdsFormatted,
+        count: clientIdsFormatted.length,
+        firstIdType: typeof clientIdsFormatted[0]
+      });
+
+      // Validar dados antes do envio
+      if (clientIdsFormatted.length === 0) {
+        throw new Error('Nenhum cliente selecionado');
+      }
+      
+      if (!dataInicioFormat || !dataFimFormat) {
+        throw new Error('Datas de início e fim são obrigatórias');
+      }
+
       const response = await createBatch({
-        client_ids: selectedClients,
-        data_inicio: dataInicio,
-        data_fim: dataFim
+        client_ids: clientIdsFormatted,
+        data_inicio: dataInicioFormat,
+        data_fim: dataFimFormat
       });
 
       toast.success('Lote criado com sucesso!');
       onSuccess(response.batch_id);
       onClose();
     } catch (error: any) {
+      console.error("❌ Erro no handleSubmit:", error);
       toast.error(error.response?.data?.message || 'Erro ao criar lote');
     }
-  };
+  }, [selectedClients, dataInicio, dataFim, createBatch, onSuccess, onClose]);
 
   // Limpar formulário ao fechar
   useEffect(() => {
@@ -173,7 +246,7 @@ const BatchRequestModal: React.FC<BatchRequestModalProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ type: "spring", stiffness: 200, damping: 25 }}
           className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden"
         >
           {/* Header */}
@@ -298,30 +371,12 @@ const BatchRequestModal: React.FC<BatchRequestModalProps> = ({
                   ) : (
                     <div className="divide-y divide-gray-100">
                       {filteredClients.map((client) => (
-                        <label
+                        <ClientItem
                           key={client.id}
-                          className="flex items-center p-3 hover:bg-gray-50 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedClients.includes(client.id)}
-                            onChange={() => toggleClient(client.id)}
-                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <div className="ml-3 flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-gray-900">
-                                {client.name}
-                              </span>
-                              <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
-                                Online
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              CNPJ: {client.cnpj}
-                            </p>
-                          </div>
-                        </label>
+                          client={client}
+                          isSelected={selectedClients.includes(client.id)}
+                          onToggle={toggleClient}
+                        />
                       ))}
                     </div>
                   )}

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Header } from "../components/Header"
 import { SearchBar } from "../components/SearchBar"
 import { ClientList } from "../components/ClientList"
@@ -44,8 +44,7 @@ const Dashboard: React.FC = () => {
           isOnline: false, // Será atualizado pelo hook
         }))
 
-        setClients(formattedClients)
-        setFilteredClients(formattedClients)
+        setBaseClients(formattedClients)
 
         const accountantResponse = await api.get("/auth/me")
         const data = accountantResponse.data
@@ -70,59 +69,54 @@ const Dashboard: React.FC = () => {
     fetchData()
   }, [])
 
-  // Atualiza o status online dos clientes quando o hook retorna dados
+  // Estado para clientes base (sem status online)
+  const [baseClients, setBaseClients] = useState<Client[]>([]);
+
+  // Memoizar clientes com status online para evitar re-renderizações desnecessárias
+  const clientsWithOnlineStatus = useMemo(() => {
+    if (baseClients.length === 0) return [];
+    
+    return baseClients.map(client => ({
+      ...client,
+      isOnline: isClienteOnline(client.id)
+    }));
+  }, [baseClients, isClienteOnline]);
+
+  // Memoizar filtro de clientes para evitar recálculos desnecessários
+  const filteredClientsMemo = useMemo(() => {
+    if (!searchTerm.trim()) return clientsWithOnlineStatus;
+    
+    const normalizedText = searchTerm.toLowerCase().trim();
+    const numericText = searchTerm.replace(/\D/g, "").trim();
+    const isNumericSearch = /^\d+$/.test(numericText);
+    
+    return clientsWithOnlineStatus.filter((client) => {
+      const name = String(client.name || "").toLowerCase().trim();
+      const cnpj = String(client.cnpj || "").replace(/\D/g, "");
+      
+      return name.includes(normalizedText) || (isNumericSearch && cnpj.includes(numericText));
+    });
+  }, [clientsWithOnlineStatus, searchTerm]);
+
+  // Atualizar estados apenas quando necessário
   useEffect(() => {
-    if (clients.length > 0) {
-      const updatedClients = clients.map(client => ({
-        ...client,
-        isOnline: isClienteOnline(client.id)
-      }))
-      
-      setClients(updatedClients)
-      
-      // Atualiza também os clientes filtrados
-      if (searchTerm) {
-        const updatedFiltered = updatedClients.filter((client) => {
-          const name = String(client.name || "").toLowerCase().trim()
-          const cnpj = String(client.cnpj || "").replace(/\D/g, "")
-          const normalizedText = searchTerm.toLowerCase().trim()
-          const numericText = searchTerm.replace(/\D/g, "").trim()
-          const isNumericSearch = /^\d+$/.test(numericText)
-          
-          return name.includes(normalizedText) || (isNumericSearch && cnpj.includes(numericText))
-        })
-        setFilteredClients(updatedFiltered)
-      } else {
-        setFilteredClients(updatedClients)
-      }
-    }
-  }, [clients.length, isClienteOnline, searchTerm])
+    setClients(clientsWithOnlineStatus);
+    setFilteredClients(filteredClientsMemo);
+  }, [clientsWithOnlineStatus, filteredClientsMemo]);
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
+  const handleSearch = useCallback((value: string) => {
+    setSearchTerm(value);
+  }, []);
 
-    const normalizedText = value.toLowerCase().trim()
-    const numericText = value.replace(/\D/g, "").trim()
-    const isNumericSearch = /^\d+$/.test(numericText)
+  const handleBatchSuccess = useCallback((batchId: string) => {
+    setCurrentBatchId(batchId);
+    setIsBatchProgressOpen(true);
+  }, []);
 
-    const filtered = clients.filter((client) => {
-      const name = String(client.name || "").toLowerCase().trim()
-      const cnpj = String(client.cnpj || "").replace(/\D/g, "")
-      return name.includes(normalizedText) || (isNumericSearch && cnpj.includes(numericText))
-    })
-
-    setFilteredClients(filtered)
-  }
-
-  const handleBatchSuccess = (batchId: string) => {
-    setCurrentBatchId(batchId)
-    setIsBatchProgressOpen(true)
-  }
-
-  const handleCloseBatchProgress = () => {
-    setIsBatchProgressOpen(false)
-    setCurrentBatchId(null)
-  }
+  const handleCloseBatchProgress = useCallback(() => {
+    setIsBatchProgressOpen(false);
+    setCurrentBatchId(null);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -229,16 +223,18 @@ const Dashboard: React.FC = () => {
         onClose={() => setIsFeedbackOpen(false)}
       />
 
-      {/* Modal de Solicitação em Lotes */}
-      <BatchRequestModal
-        isOpen={isBatchModalOpen}
-        onClose={() => setIsBatchModalOpen(false)}
-        onSuccess={handleBatchSuccess}
-        clients={clients}
-      />
+      {/* Modal de Solicitação em Lotes - Lazy Loading */}
+      {isBatchModalOpen && (
+        <BatchRequestModal
+          isOpen={isBatchModalOpen}
+          onClose={() => setIsBatchModalOpen(false)}
+          onSuccess={handleBatchSuccess}
+          clients={clients}
+        />
+      )}
 
-      {/* Modal de Progresso do Lote */}
-      {currentBatchId && (
+      {/* Modal de Progresso do Lote - Lazy Loading */}
+      {currentBatchId && isBatchProgressOpen && (
         <BatchProgressModal
           isOpen={isBatchProgressOpen}
           onClose={handleCloseBatchProgress}

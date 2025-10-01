@@ -25,8 +25,8 @@ export const useClientesOnline = (clients: any[]) => {
     // Primeira verificação imediata
     verificarClientesOnline();
     
-    // Polling a cada 5 segundos para dashboard (menos frequente)
-    pollingRef.current = setInterval(verificarClientesOnline, 5000);
+    // Polling a cada 10 segundos para dashboard (menos frequente)
+    pollingRef.current = setInterval(verificarClientesOnline, 10000);
   }, [verificarClientesOnline]);
 
   // Função para parar polling

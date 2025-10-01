@@ -186,10 +186,45 @@ export const batchRequests = {
   // Criar solicitação em lote
   createBatch: async (data: { client_ids: string[]; data_inicio: string; data_fim: string }) => {
     try {
+      // Validar dados antes do envio
+      if (!data.client_ids || data.client_ids.length === 0) {
+        throw new Error('Lista de clientes não pode estar vazia');
+      }
+      
+      if (!data.data_inicio || !data.data_fim) {
+        throw new Error('Datas de início e fim são obrigatórias');
+      }
+
+      console.log("📤 Enviando dados para API:", {
+        client_ids: data.client_ids,
+        data_inicio: data.data_inicio,
+        data_fim: data.data_fim,
+        client_ids_count: data.client_ids.length,
+        client_ids_type: typeof data.client_ids[0],
+        data_inicio_type: typeof data.data_inicio,
+        data_fim_type: typeof data.data_fim,
+        payload: JSON.stringify(data, null, 2)
+      });
+      
       const response = await api.post("/auth/solicitacoes/batch", data);
+      console.log("✅ Resposta da API:", response.data);
       return response.data;
     } catch (error: any) {
-      console.error("❌ Create Batch Error:", error.response?.data || error.message);
+      console.error("❌ Create Batch Error:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        fullError: error
+      });
+      
+      // Log detalhado para 422
+      if (error.response?.status === 422) {
+        console.error("🔍 Detalhes do erro 422:", {
+          validationErrors: error.response?.data?.detail || error.response?.data?.errors,
+          body: error.response?.data
+        });
+      }
+      
       throw error;
     }
   },
