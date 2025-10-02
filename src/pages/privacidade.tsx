@@ -133,7 +133,7 @@ const PrivacidadePage = () => {
         Para dúvidas, sugestões ou solicitações relacionadas à privacidade e proteção de dados, entre em contato:
       </p>
       <ul className="list-disc pl-6 mb-4 text-gray-600">
-        <li><strong>Email:</strong> privacidade@portalxml.com.br</li>
+        <li><strong>Email:</strong> suporte@wmsistemas.inf.br</li>
       </ul>
     </div>
   </div>
