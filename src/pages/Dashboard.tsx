@@ -24,11 +24,31 @@ const Dashboard: React.FC = () => {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false)
   const [isBatchProgressOpen, setIsBatchProgressOpen] = useState(false)
-  const [currentBatchId, setCurrentBatchId] = useState<string | null>(null)
+  const [isBatchProgressMinimized, setIsBatchProgressMinimized] = useState(() => {
+    // Recuperar estado do localStorage
+    const saved = localStorage.getItem('batchProgressMinimized')
+    return saved === 'true'
+  })
+  const [currentBatchId, setCurrentBatchId] = useState<string | null>(() => {
+    // Recuperar batchId do localStorage
+    return localStorage.getItem('currentBatchId')
+  })
   const [isLoading, setIsLoading] = useState(true)
 
   // Hook para verificar status online dos clientes
   const { isClienteOnline } = useClientesOnline(clients)
+
+  // Restaurar estado do modal minimizado ao carregar
+  useEffect(() => {
+    const savedBatchId = localStorage.getItem('currentBatchId')
+    const savedMinimized = localStorage.getItem('batchProgressMinimized')
+    
+    if (savedBatchId && savedMinimized === 'true') {
+      setCurrentBatchId(savedBatchId)
+      setIsBatchProgressMinimized(true)
+      setIsBatchProgressOpen(true) // Garantir que o modal está "aberto" mas minimizado
+    }
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,11 +131,30 @@ const Dashboard: React.FC = () => {
   const handleBatchSuccess = useCallback((batchId: string) => {
     setCurrentBatchId(batchId);
     setIsBatchProgressOpen(true);
+    // Salvar no localStorage
+    localStorage.setItem('currentBatchId', batchId);
   }, []);
 
   const handleCloseBatchProgress = useCallback(() => {
     setIsBatchProgressOpen(false);
+    setIsBatchProgressMinimized(false);
     setCurrentBatchId(null);
+    // Limpar localStorage
+    localStorage.removeItem('currentBatchId');
+    localStorage.removeItem('batchProgressMinimized');
+  }, []);
+
+  const handleMinimizeBatchProgress = useCallback(() => {
+    setIsBatchProgressMinimized(true);
+    // Salvar no localStorage
+    localStorage.setItem('batchProgressMinimized', 'true');
+  }, []);
+
+  const handleMaximizeBatchProgress = useCallback(() => {
+    setIsBatchProgressMinimized(false);
+    setIsBatchProgressOpen(true);
+    // Remover do localStorage
+    localStorage.removeItem('batchProgressMinimized');
   }, []);
 
   return (
@@ -234,12 +273,25 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Modal de Progresso do Lote - Lazy Loading */}
-      {currentBatchId && isBatchProgressOpen && (
+      {currentBatchId && isBatchProgressOpen && !isBatchProgressMinimized && (
         <BatchProgressModal
           isOpen={isBatchProgressOpen}
           onClose={handleCloseBatchProgress}
+          onMinimize={handleMinimizeBatchProgress}
           batchId={currentBatchId}
         />
+      )}
+
+      {/* Botão para maximizar modal minimizado */}
+      {currentBatchId && isBatchProgressMinimized && (
+        <button
+          onClick={handleMaximizeBatchProgress}
+          className="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl z-40 flex items-center gap-2"
+          title="Maximizar progresso do lote"
+        >
+          <Users className="w-5 h-5" />
+          <span className="text-sm font-medium">Lote em Processo</span>
+        </button>
       )}
     </div>
   )

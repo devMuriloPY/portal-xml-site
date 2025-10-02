@@ -9,12 +9,14 @@ import toast from 'react-hot-toast';
 interface BatchProgressModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onMinimize: () => void;
   batchId: string;
 }
 
 const BatchProgressModal: React.FC<BatchProgressModalProps> = ({
   isOpen,
   onClose,
+  onMinimize,
   batchId
 }) => {
   const { batch, isLoading, refetch } = useBatchMonitor(batchId, 5000); // Polling a cada 5 segundos
@@ -36,10 +38,7 @@ const BatchProgressModal: React.FC<BatchProgressModalProps> = ({
           return newMap;
         });
         
-        // Se tem XML URL, mostrar toast de sucesso
-        if (ultimaSolicitacao.xml_url && !clientStatuses.get(clientId)?.xml_url) {
-          toast.success(`XML gerado para ${ultimaSolicitacao.client_name || 'cliente'}!`);
-        }
+        // XML gerado - sem notificação toast
       }
     } catch (error) {
       console.error(`Erro ao verificar status do cliente ${clientId}:`, error);
@@ -69,21 +68,61 @@ const BatchProgressModal: React.FC<BatchProgressModalProps> = ({
 
   // Função para copiar URL
   const copyUrl = async (url: string, itemId: string) => {
+    // Verificar se a URL existe
+    if (!url) {
+      toast.error('URL não disponível para cópia');
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(url);
-      setCopiedItems(prev => new Set(prev).add(itemId));
-      toast.success('URL copiada para a área de transferência!');
-      
-      // Remover da lista de copiados após 2 segundos
-      setTimeout(() => {
-        setCopiedItems(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(itemId);
-          return newSet;
-        });
-      }, 2000);
+      // Tentar usar a API moderna do clipboard
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(url);
+        setCopiedItems(prev => new Set(prev).add(itemId));
+        toast.success('URL copiada para a área de transferência!');
+        
+        // Remover da lista de copiados após 2 segundos
+        setTimeout(() => {
+          setCopiedItems(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(itemId);
+            return newSet;
+          });
+        }, 2000);
+      } else {
+        // Fallback para navegadores mais antigos ou contextos não seguros
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          document.execCommand('copy');
+          setCopiedItems(prev => new Set(prev).add(itemId));
+          toast.success('URL copiada para a área de transferência!');
+          
+          // Remover da lista de copiados após 2 segundos
+          setTimeout(() => {
+            setCopiedItems(prev => {
+              const newSet = new Set(prev);
+              newSet.delete(itemId);
+              return newSet;
+            });
+          }, 2000);
+        } catch (fallbackError) {
+          console.error('Erro no fallback de cópia:', fallbackError);
+          toast.error('Erro ao copiar URL. Tente selecionar e copiar manualmente.');
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
     } catch (error) {
-      toast.error('Erro ao copiar URL');
+      console.error('Erro ao copiar URL:', error);
+      toast.error('Erro ao copiar URL. Verifique as permissões do navegador.');
     }
   };
 
@@ -304,7 +343,7 @@ const BatchProgressModal: React.FC<BatchProgressModalProps> = ({
                       }).length || 0} de {batch.requests?.length || 0} XML(s) gerado(s)
                     </div>
                     <button
-                      onClick={onClose}
+                      onClick={isBatchComplete() ? onClose : onMinimize}
                       className={`px-4 py-2 text-white rounded-lg transition-colors font-medium ${isBatchComplete() ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                     >
                       {isBatchComplete() ? 'Fechar' : 'Minimizar'}
