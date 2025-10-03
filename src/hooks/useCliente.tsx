@@ -48,9 +48,6 @@ export const useCliente = (id: string | undefined, fallbackCliente?: Client | nu
       if (novoStatus !== lastStatusRef.current) {
         setIsOnline(novoStatus);
         lastStatusRef.current = novoStatus;
-        
-        // Log para debug
-        console.log(`🔄 Cliente ${id} mudou status: ${lastStatusRef.current ? 'offline' : 'online'} → ${novoStatus ? 'online' : 'offline'}`);
       }
     } catch (error) {
       console.error("Erro ao verificar status do cliente:", error);

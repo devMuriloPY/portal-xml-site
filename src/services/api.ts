@@ -25,7 +25,6 @@ api.interceptors.request.use((config) => {
 // ✅ Interceptor de resposta com tratamento para sessão expirada
 api.interceptors.response.use(
   (response) => {
-    console.log("✅ Resposta da API:", response);
     return response;
   },
   (error) => {
@@ -76,10 +75,8 @@ export const auth = {
         senha_confirmacao,
       });
 
-      console.log("🔍 Resposta da API:", response);
       return response.data;
     } catch (error: any) {
-      console.error("❌ Erro na API:", error);
 
       if (!error.response) {
         throw new Error("Erro de conexão com o servidor");
@@ -194,20 +191,8 @@ export const batchRequests = {
       if (!data.data_inicio || !data.data_fim) {
         throw new Error('Datas de início e fim são obrigatórias');
       }
-
-      console.log("📤 Enviando dados para API:", {
-        client_ids: data.client_ids,
-        data_inicio: data.data_inicio,
-        data_fim: data.data_fim,
-        client_ids_count: data.client_ids.length,
-        client_ids_type: typeof data.client_ids[0],
-        data_inicio_type: typeof data.data_inicio,
-        data_fim_type: typeof data.data_fim,
-        payload: JSON.stringify(data, null, 2)
-      });
       
       const response = await api.post("/auth/solicitacoes/batch", data);
-      console.log("✅ Resposta da API:", response.data);
       return response.data;
     } catch (error: any) {
       console.error("❌ Create Batch Error:", {

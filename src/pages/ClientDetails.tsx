@@ -51,8 +51,6 @@ const ClientDetails = () => {
   useEffect(() => {
     if (!id) return
 
-    console.log("🔄 Carregando dados do cliente", { id, clientFromState: location.state?.client })
-
     setIsLoading(true)
     // 🗓️ Define automaticamente datas do mês anterior
     const hoje = new Date()

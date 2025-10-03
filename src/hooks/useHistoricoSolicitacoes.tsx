@@ -47,7 +47,6 @@ export const useHistoricoSolicitacoes = (id: string | undefined) => {
       if (houveMudancas) {
         setSolicitacoes(atualizadas);
         solicitacoesAnteriores.current = atualizadas;
-        console.log("🔄 Solicitações atualizadas");
       }
     } catch (error) {
       console.error("Erro ao verificar mudanças:", error);

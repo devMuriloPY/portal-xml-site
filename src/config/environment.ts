@@ -25,12 +25,3 @@ export const getApiBaseUrl = (): string => {
   const env = config.environment as keyof typeof config.urls;
   return config.urls[env] || config.urls.development;
 };
-
-// Log da configuração atual (apenas em desenvolvimento)
-if (config.environment === "development") {
-  console.log("🔧 Configuração da API:", {
-    environment: config.environment,
-    apiBaseUrl: getApiBaseUrl(),
-    viteApiBaseUrl: import.meta.env.VITE_API_BASE_URL
-  });
-}
