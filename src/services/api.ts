@@ -172,7 +172,6 @@ export const auth = {
 
       return response.data;
     } catch (error: any) {
-      console.error("❌ Redefinir Senha Error:", error.response?.data || error.message);
       throw error;
     }
   },

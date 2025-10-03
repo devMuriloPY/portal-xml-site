@@ -48,14 +48,28 @@ const LoginPage: React.FC = () => {
   const [cnpjError, setCnpjError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [isFormValid, setIsFormValid] = useState(false)
+  const [rememberCredentials, setRememberCredentials] = useState(false)
 
   const mouse = useParallax()
 
   useEffect(() => {
     const expired = localStorage.getItem("sessionExpired")
     if (expired === "true") {
-      toast.error("⚠️ Sua sessão expirou. Faça login novamente.", { id: TOAST_ID })
       localStorage.removeItem("sessionExpired")
+    }
+    
+    // Carregar credenciais salvas
+    const savedCnpj = localStorage.getItem("savedCnpj")
+    const savedPassword = localStorage.getItem("savedPassword")
+    const rememberStatus = localStorage.getItem("rememberCredentials")
+    
+    if (savedCnpj && rememberStatus === "true") {
+      setCnpj(savedCnpj)
+      setRememberCredentials(true)
+    }
+    
+    if (savedPassword && rememberStatus === "true") {
+      setPassword(savedPassword)
     }
   }, [])
 
@@ -64,10 +78,17 @@ const LoginPage: React.FC = () => {
     const digits = cnpj.replace(/\D/g, "")
     const okCnpj = digits.length === 14
     const okPass = password.length >= 6
-    setCnpjError(okCnpj ? "" : digits.length ? "CNPJ deve ter 14 dígitos" : "")
-    setPasswordError(okPass ? "" : password.length ? "Senha deve ter pelo menos 6 caracteres" : "")
+    
+    // Só atualizar erros de validação se não houver erro de servidor
+    if (!cnpjError.includes("inválidos")) {
+      setCnpjError(okCnpj ? "" : digits.length ? "CNPJ deve ter 14 dígitos" : "")
+    }
+    if (!passwordError.includes("inválidos")) {
+      setPasswordError(okPass ? "" : password.length ? "Senha deve ter pelo menos 6 caracteres" : "")
+    }
+    
     setIsFormValid(okCnpj && okPass)
-  }, [cnpj, password])
+  }, [cnpj, password, cnpjError, passwordError])
 
   const formatCNPJ = (value: string) =>
     value
@@ -77,6 +98,22 @@ const LoginPage: React.FC = () => {
       .replace(/(\d{3})(\d)/, "$1/$2")
       .replace(/(\d{4})(\d)/, "$1-$2")
       .slice(0, 18)
+
+  // Limpar erros quando usuário começar a digitar
+  const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = formatCNPJ(e.target.value)
+    setCnpj(value)
+    if (cnpjError.includes("inválidos")) {
+      setCnpjError("")
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+    if (passwordError.includes("inválidos")) {
+      setPasswordError("")
+    }
+  }
 
   // animação de “pacotes XML” lado direito
   const packets = useMemo(
@@ -91,15 +128,42 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    toast.loading("Entrando...", { id: TOAST_ID })
+    
+    // Limpar erros anteriores
+    setCnpjError("")
+    setPasswordError("")
 
     try {
       const response = await auth.login(cnpj.replace(/\D/g, ""), password)
       localStorage.setItem("token", response.access_token)
+      
+      // Salvar credenciais se marcado
+      if (rememberCredentials) {
+        localStorage.setItem("savedCnpj", cnpj)
+        localStorage.setItem("savedPassword", password)
+        localStorage.setItem("rememberCredentials", "true")
+      } else {
+        // Limpar credenciais salvas se desmarcado
+        localStorage.removeItem("savedCnpj")
+        localStorage.removeItem("savedPassword")
+        localStorage.removeItem("rememberCredentials")
+      }
+      
       toast.success("Login realizado com sucesso!", { id: TOAST_ID })
       navigate("/dashboard")
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || "Erro ao fazer login", { id: TOAST_ID })
+      console.error("Login error:", error)
+      
+      // Tratar diferentes tipos de erro
+      const errorMessage = error.response?.data?.detail || error.response?.data?.message || "Erro ao fazer login"
+      
+      // Se for erro de credenciais, mostrar erro específico
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        setPasswordError("CNPJ ou senha inválidos")
+        toast.error("Credenciais inválidas", { id: TOAST_ID })
+      } else {
+        toast.error(errorMessage, { id: TOAST_ID })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -189,6 +253,9 @@ const LoginPage: React.FC = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Campo oculto para ajudar o navegador a entender o contexto */}
+                <input type="hidden" name="form-type" value="login" />
+                
                 {/* CNPJ */}
                 <div>
                   <label htmlFor="cnpj" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -206,7 +273,7 @@ const LoginPage: React.FC = () => {
                       id="cnpj"
                       type="text"
                       value={cnpj}
-                      onChange={(e) => setCnpj(formatCNPJ(e.target.value))}
+                      onChange={handleCnpjChange}
                       onFocus={() => setFocusedField("cnpj")}
                       onBlur={() => setFocusedField(null)}
                       placeholder="00.000.000/0000-00"
@@ -220,6 +287,7 @@ const LoginPage: React.FC = () => {
                       required
                       inputMode="numeric"
                       autoComplete="username"
+                      data-lpignore="false"
                       aria-invalid={!!cnpjError}
                     />
                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
@@ -251,7 +319,7 @@ const LoginPage: React.FC = () => {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={handlePasswordChange}
                       onFocus={() => setFocusedField("password")}
                       onBlur={() => setFocusedField(null)}
                       className={`w-full pl-12 pr-12 py-3.5 rounded-xl border-2 outline-none transition-all ${
@@ -263,10 +331,16 @@ const LoginPage: React.FC = () => {
                       } shadow-sm`}
                       required
                       autoComplete="current-password"
+                      data-lpignore="true"
                       aria-invalid={!!passwordError}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
-                      {password && (passwordError ? <AlertCircle className="h-5 w-5 text-red-500" /> : <CheckCircle className="h-5 w-5 text-green-500" />)}
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                      {password && !passwordError && (
+                        <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                      )}
+                      {passwordError && (
+                        <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                      )}
                       <button
                         type="button"
                         onClick={() => setShowPassword((v) => !v)}
@@ -286,35 +360,68 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-500">
-                    Login exclusivo para contadores parceiros.
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="remember"
+                      checked={rememberCredentials}
+                      onChange={(e) => setRememberCredentials(e.target.checked)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="remember" className="ml-2 text-sm text-gray-700">
+                      Lembrar CNPJ e senha
+                    </label>
                   </div>
                   <Link to="/forgot-password" className="text-sm font-medium text-blue-700 hover:underline">
                     Esqueceu a senha?
                   </Link>
                 </div>
+                
+                <div className="text-xs text-gray-500">
+                  Login exclusivo para contadores parceiros.
+                </div>
 
                 <button
                   type="submit"
                   disabled={isLoading || !isFormValid}
-                  className={`w-full py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center relative overflow-hidden transition ${
+                  className={`w-full py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center relative overflow-hidden transition-all duration-300 ${
                     isLoading || !isFormValid
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                      : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg"
+                      : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                   }`}
                 >
-                  {!isLoading && isFormValid && (
+                  {/* Animação de arquivos quando clicar */}
+                  {isLoading && (
                     <motion.div
-                      className="pointer-events-none absolute inset-0"
-                      initial={false}
-                      animate={prefersReduced ? {} : { backgroundPositionX: ["0%", "200%"] }}
-                      transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-                      style={{
-                        backgroundImage:
-                          "repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0, rgba(255,255,255,.18) 2px, transparent 2px, transparent 12px)",
-                      }}
-                    />
+                      className="absolute inset-0 flex items-center justify-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            className="bg-white/20 rounded-lg p-1"
+                            animate={{
+                              y: [0, -8, 0],
+                              scale: [1, 1.1, 1],
+                              opacity: [0.7, 1, 0.7]
+                            }}
+                            transition={{
+                              duration: 1.2,
+                              repeat: Infinity,
+                              delay: i * 0.2,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            <FileCheck2 className="h-4 w-4 text-white" />
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.div>
                   )}
+                  
                   {isLoading ? (
                     <>
                       <Loader2 className="animate-spin h-6 w-6 mr-3" />

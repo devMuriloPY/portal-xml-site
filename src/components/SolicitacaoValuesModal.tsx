@@ -24,7 +24,9 @@ export const SolicitacaoValuesModal = ({ isOpen, onClose, solicitacao }: Props) 
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pt-BR");
+    // Converter data corretamente sem problemas de timezone
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
   };
 
   const formatDateTime = (dateTimeString: string) => {

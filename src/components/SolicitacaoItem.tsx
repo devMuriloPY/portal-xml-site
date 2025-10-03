@@ -11,6 +11,13 @@ interface Props {
 
 export const SolicitacaoItem = ({ item, onDelete }: Props) => {
   const [copied, setCopied] = useState(false);
+
+  // Função para converter data corretamente sem problemas de timezone
+  const formatDateFromString = (dateString: string) => {
+    // Se a data já está no formato YYYY-MM-DD, usar diretamente
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  };
   const [isValuesModalOpen, setIsValuesModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -55,7 +62,7 @@ export const SolicitacaoItem = ({ item, onDelete }: Props) => {
           <div className="ml-6 text-sm text-gray-500">
             <span>{item.status === "concluido" ? "Concluído" : "Pendente"}</span><br />
             <span>
-              Período: {new Date(item.data_inicio).toLocaleDateString()} até {new Date(item.data_fim).toLocaleDateString()}
+              Período: {formatDateFromString(item.data_inicio)} até {formatDateFromString(item.data_fim)}
             </span>
           </div>
         </div>
