@@ -1,0 +1,22 @@
+# Configuração de exemplo para Nginx
+# Copie este conteúdo para o arquivo de configuração do seu servidor Nginx
+# ou adicione ao bloco server {} do seu site
+
+server {
+    listen 80;
+    server_name portalcontador.wmsistemas.inf.br;
+    root /caminho/para/seu/dist;
+    index index.html;
+
+    # Redireciona todas as rotas para index.html (necessário para SPAs)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache para arquivos estáticos
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+
