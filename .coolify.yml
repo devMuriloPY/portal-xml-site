@@ -1,0 +1,15 @@
+# Configuração do Coolify
+# Este arquivo ajuda o Coolify a configurar corretamente a aplicação
+
+build:
+  command: npm run build
+  output_directory: dist
+
+nginx:
+  # Configuração customizada do Nginx para SPAs
+  # Esta configuração resolve o problema de tela branca ao dar F5
+  custom_config: |
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
