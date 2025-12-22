@@ -1,0 +1,8 @@
+portalcontador.wmsistemas.inf.br {
+  root * /app/dist
+  encode gzip zstd
+
+  try_files {path} /index.html
+  file_server
+}
+

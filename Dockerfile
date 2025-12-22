@@ -1,5 +1,5 @@
-# Dockerfile para deploy no Coolify
-# Este Dockerfile garante que o Nginx esteja configurado corretamente para SPAs
+# Dockerfile para deploy no Coolify com Caddy
+# Este Dockerfile garante que o Caddy esteja configurado corretamente para SPAs
 
 FROM node:18-alpine AS builder
 
@@ -18,18 +18,18 @@ COPY . .
 # Build da aplicação
 RUN npm run build
 
-# Estágio de produção com Nginx
-FROM nginx:alpine
+# Estágio de produção com Caddy
+FROM caddy:2-alpine
 
-# Copia os arquivos buildados para o diretório do Nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copia os arquivos buildados para o diretório do Caddy
+COPY --from=builder /app/dist /app/dist
 
-# Copia a configuração customizada do Nginx (CRÍTICO para resolver o problema do F5)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copia o Caddyfile com a configuração para SPA (history API fallback)
+COPY Caddyfile /etc/caddy/Caddyfile
 
-# Expõe a porta 80
+# Expõe as portas 80 e 443
 EXPOSE 80
+EXPOSE 443
 
-# Inicia o Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# O Caddy inicia automaticamente usando o Caddyfile
 
