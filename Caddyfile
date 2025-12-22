@@ -1,4 +1,4 @@
-portalcontador.wmsistemas.inf.br {
+:80 {
   root * /app/dist
   encode gzip zstd
 
