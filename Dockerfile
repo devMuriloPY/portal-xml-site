@@ -30,6 +30,7 @@ COPY Caddyfile /etc/caddy/Caddyfile
 # Expõe as portas 80 e 443
 EXPOSE 80
 EXPOSE 443
+EXPOSE 3000
 
 # O Caddy inicia automaticamente usando o Caddyfile
 
