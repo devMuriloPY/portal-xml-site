@@ -26,7 +26,7 @@ const BatchProgressModal: React.FC<BatchProgressModalProps> = ({
   // Função para verificar status de um cliente específico
   const checkClientStatus = async (clientId: string) => {
     try {
-      const response = await api.get(`/auth/solicitacoes/${clientId}`);
+      const response = await api.get(`//${clientId}`);
       const solicitacoes = response.data;
       
       // Pegar a solicitação mais recente

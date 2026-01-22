@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import FirstAccessPage from "./pages/FirstAccessPage";
 import TermosPage from "./pages/termos";
 import PrivacidadePage from "./pages/privacidade";
+import SuportePage from "./pages/suporte";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import VerifyCodePage from "./pages/VerifyCodePage";
 import NewPasswordPage from "./pages/NewPasswordPage";
@@ -51,6 +52,7 @@ function App() {
         <Route path="/clientes/:id" element={<ClientDetails />} />
         <Route path="/privacidade" element={<PrivacidadePage />} />
         <Route path="/termos" element={<TermosPage />} />
+        <Route path="/suporte" element={<SuportePage />} />
       </Routes>
       <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
     </Router>

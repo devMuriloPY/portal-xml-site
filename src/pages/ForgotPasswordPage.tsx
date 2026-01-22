@@ -255,6 +255,9 @@ const ForgotPasswordPage = () => {
             <Link to="/termos" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors">
               Termos
             </Link>
+            <Link to="/suporte" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors">
+              Suporte
+            </Link>
           </div>
         </div>
       </div>

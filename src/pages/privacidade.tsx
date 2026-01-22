@@ -163,6 +163,11 @@ const PrivacidadePage = () => {
                     Termos
                   </Link>
                 </li>
+                <li>
+                  <Link to="/suporte" className="text-gray-500 hover:text-blue-600 transition-colors text-sm">
+                    Suporte
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
